@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Connexion — ScolACI</title>
+<meta name="theme-color" content="#0b0c10">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--night:#0b0c10;--panel:#14161d;--line:#262a36;--ink:#f1ede3;--muted:#8d92a0;--gold:#c9a24d;--gold2:#f3dc9b;--no:#f87171;--ok:#34d399;--warn:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:radial-gradient(800px 460px at 80% -5%,rgba(201,162,77,.25),transparent 62%),radial-gradient(600px 400px at 0% 105%,rgba(201,162,77,.12),transparent 60%),var(--night);color:var(--ink);min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+.card{width:100%;max-width:440px;background:linear-gradient(180deg,#1a1c25,var(--panel));border:1px solid rgba(201,162,77,.28);border-radius:26px;padding:36px 32px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.brand{text-align:center;margin-bottom:24px}
+.crest{width:56px;height:56px;border-radius:17px;margin:0 auto 12px;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#14151a;display:grid;place-items:center;font-family:"Cormorant Garamond",serif;font-size:34px;font-weight:700;box-shadow:0 10px 28px rgba(201,162,77,.4)}
+.brand h1{font-family:"Cormorant Garamond",serif;font-size:36px;line-height:1;color:var(--gold2)}
+.brand p{color:var(--muted);font-size:13px;margin-top:6px}
+.demo{display:none;margin-bottom:18px;padding:10px 14px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);color:var(--warn);font-size:12px}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.role input{position:absolute;opacity:0;pointer-events:none}
+.role span{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:14px;border:1.5px solid var(--line);background:#0e1015;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s}
+.role svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.role span:hover{color:#fff}
+.role input:checked+span{border-color:var(--gold);background:rgba(201,162,77,.12);color:var(--gold2)}
+.role input:focus-visible+span{outline:2px solid var(--gold);outline-offset:2px}
+.role.owner{display:none;grid-column:1/-1}.role.owner.show{display:block}
+.role.owner span{flex-direction:row;justify-content:center}
+.fg{margin-bottom:16px}
+label.l{display:block;font-size:12.5px;font-weight:600;color:#b6b9c4;margin-bottom:6px}
+.field{position:relative}
+input.t{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;background:#0c0e13;color:var(--ink);outline:none;font-family:inherit}
+input.t::placeholder{color:#5d6272}
+input.t:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,162,77,.16)}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);padding:8px;cursor:pointer;font-size:12px;font-weight:700}
+.eye:hover{color:var(--gold2)}.field input.t.has-eye{padding-right:70px}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 10px 26px rgba(184,147,74,.35);margin-top:6px;font-family:inherit;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.6;cursor:wait;transform:none}
+.btn:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+.msg{min-height:20px;margin:12px 0 0;font-size:13px;text-align:center;color:var(--no)}
+.msg.info{color:var(--gold2)}
+.hint{color:var(--muted);font-size:12.5px;margin-bottom:16px}
+.links{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px;font-size:12.5px}
+.links a,.links button{color:var(--muted);text-decoration:none;background:none;border:0;font:inherit;cursor:pointer}.links a:hover,.links button:hover{color:var(--gold2)}
+.help{margin-top:16px;font-size:12px;color:#6d7180;text-align:center}.help a{color:var(--gold2);text-decoration:none}.help a:hover{text-decoration:underline}
+[hidden]{display:none!important}
+.remember{display:flex;gap:10px;align-items:flex-start;margin:2px 0 14px;font-size:13px;color:#d4d6de;cursor:pointer}
+.remember input{accent-color:#c9a24d;width:18px;height:18px;margin-top:1px;flex:none}
+.remember small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.checking .card{visibility:hidden}
+</style>
+</head>
+<body class="checking">
+<main class="card">
+  <div class="brand"><div class="crest">S</div><h1>ScolACI</h1><p>Système de gestion scolaire & universitaire</p></div>
+  <div class="demo" id="demo">Mode démonstration : les mots de passe des enseignants et des élèves ne sont pas encore vérifiés par un serveur.</div>
+
+  <!-- Étape 1 : connexion -->
+  <form id="stepLogin" onsubmit="handleLogin(event)" novalidate>
+    <div class="roles" role="radiogroup" aria-label="Profil">
+      <label class="role"><input type="radio" name="role" value="STUDENT" checked><span><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>Élève</span></label>
+      <label class="role"><input type="radio" name="role" value="TEACHER"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>Enseignant</span></label>
+      <label class="role"><input type="radio" name="role" value="ADMIN"><span><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-5h4v5"/></svg>Administration</span></label>
+      <label class="role owner" id="ownerTile"><input type="radio" name="role" value="SUPER_ADMIN"><span><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Accès propriétaire</span></label>
+    </div>
+    <div class="fg"><label class="l" for="identifier" id="idLabel">Matricule</label><input class="t" id="identifier" placeholder="Ex: CI-2026-897" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
+    <div class="fg"><label class="l" for="password">Mot de passe</label><div class="field"><input class="t has-eye" type="password" id="password" placeholder="••••••••" autocomplete="current-password"><button type="button" class="eye" onclick="toggleEye('password',this)" aria-label="Afficher le mot de passe">Voir</button></div></div>
+    <label class="remember"><input type="checkbox" id="remember"><span>Rester connecté sur cet appareil<small id="rememberNote"></small></span></label>
+    <button class="btn" id="go" type="submit">Se connecter</button>
+    <p class="msg" id="msg" role="alert" aria-live="polite"></p>
+  </form>
+
+  <!-- Étape 2 : choix du mot de passe (première connexion) -->
+  <form id="stepSetup" onsubmit="handleSetup(event)" hidden novalidate>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gold2);margin-bottom:6px" id="setupTitle">Choisissez votre mot de passe</h2>
+    <p class="hint" id="setupHint"></p>
+    <div class="fg"><label class="l" for="np1">Nouveau mot de passe</label><div class="field"><input class="t has-eye" type="password" id="np1" autocomplete="new-password"><button type="button" class="eye" onclick="toggleEye('np1',this)">Voir</button></div></div>
+    <div class="fg"><label class="l" for="np2">Confirmer le mot de passe</label><input class="t" type="password" id="np2" autocomplete="new-password"></div>
+    <button class="btn" id="goSetup" type="submit">Enregistrer et continuer</button>
+    <p class="msg" id="msg2" role="alert" aria-live="polite"></p>
+    <div class="links"><button type="button" onclick="backToLogin()">← Retour</button></div>
+  </form>
+
+  <div class="links"><a href="index.html">← Retour à l'accueil</a><button type="button" id="ownerLink">Accès propriétaire</button></div>
+  <p class="help">Mot de passe oublié ? Contactez la direction de votre établissement.</p>
+  <p class="help" id="previews" hidden>Aperçus avec données d'exemple : <a id="pv1" href="#">Élève</a> · <a id="pv2" href="#">Enseignant</a> · <a id="pv3" href="#">Administration</a> · <a id="pv4" href="#">Propriétaire</a></p>
+</main>
+
+<script>
+// ===== Réglages =====
+// Chemins de vos pages : adaptez-les si vos fichiers sont rangés autrement.
+// LAYOUT = 'flat'  : tous les fichiers dans le même dossier (le plus simple pour tester).
+// LAYOUT = 'pages' : fichiers rangés dans pages/admin, pages/teacher, pages/student, pages/super-admin.
+const LAYOUT = 'flat';
+const ROUTES = LAYOUT === 'flat'
+  ? { SUPER_ADMIN: 'superadmin-scolaci.html', ADMIN: 'admin-scolaci.html', TEACHER: 'prof-scolaci.html', STUDENT: 'eleve-scolaci.html' }
+  : { SUPER_ADMIN: 'pages/super-admin/super-admin-dashboard.html', ADMIN: 'pages/admin/admin-dashboard.html', TEACHER: 'pages/teacher/teacher-dashboard.html', STUDENT: 'pages/student/student-dashboard.html' };
+// DEMO_MODE = true : vérification locale dans ce navigateur (pour tester).
+// À mettre à false quand authenticate() appelle votre serveur : la connexion refuse alors tout tant que ce n'est pas branché.
+const DEMO_MODE = true;
+
+// Durée de la connexion mémorisée sur l'appareil (en jours), selon le profil. Le propriétaire a la durée la plus courte.
+const DAYS_BY_ROLE = { STUDENT: 30, TEACHER: 30, ADMIN: 14, SUPER_ADMIN: 7 };
+const REMEMBER_KEY = 'scolaci_remember';
+const SCHOOL_KEY = 'scolaci_db_v1', SUPER_KEY = 'scolaci_db_super_v1', OWNER_KEY = 'scolaci_db_owner', LOCK_KEY = 'scolaci_lock';
+const $ = id => document.getElementById(id), enc = new TextEncoder();
+const readJson = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+const rnd = () => hex(crypto.getRandomValues(new Uint8Array(16)));
+const sha = async s => hex(await crypto.subtle.digest('SHA-256', enc.encode(s)));
+async function pbkdf2(pw, salt) {
+  const k = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']);
+  return hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode(salt), iterations: 150000, hash: 'SHA-256' }, k, 256));
+}
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+const bare = n => norm(n).replace(/^(m|mme|mlle|mr|dr|prof)\s+/, '');
+const bad = () => new Error('Identifiants incorrects.');
+
+// ===== Authentification =====
+// authenticate() est le seul endroit à remplacer par un appel à votre serveur.
+async function authenticate(role, id, pw) {
+  if (!DEMO_MODE) throw new Error("La connexion au serveur n'est pas encore configurée.");
+  if (!(window.crypto && crypto.subtle)) throw new Error("Ouvrez ScolACI en https:// (ou sur localhost) pour sécuriser la connexion.");
+  const school = readJson(SCHOOL_KEY) || {}, sup = readJson(SUPER_KEY) || {}, owner = readJson(OWNER_KEY);
+  if (role === 'SUPER_ADMIN') {
+    if (!owner) { if (!id) throw new Error('Choisissez un identifiant.'); return { setup: 'owner', id }; }
+    if (norm(id) !== norm(owner.id) || await pbkdf2(pw, owner.salt) !== owner.hash) throw bad();
+    return { session: { role, id: owner.id, name: 'Propriétaire' } };
+  }
+  if (role === 'ADMIN') {
+    const code = id.trim().toUpperCase(); let acc = null;
+    for (const a of (sup.admins || [])) if (a.codeHash && await sha(a.salt + code) === a.codeHash) { acc = a; break; }
+    if (!acc) throw bad();
+    if (!acc.ok) throw new Error('Ce compte a été révoqué. Contactez ScolACI.');
+    const sch = (sup.schools || []).find(s => s.id === acc.school);
+    if (sch && sch.status === 'suspended') throw new Error('Cet établissement est suspendu. Contactez ScolACI.');
+    if (!acc.pw) return { setup: 'admin', acc };
+    if (!pw) throw new Error('Entrez votre mot de passe.');
+    if (await pbkdf2(pw, acc.pw.salt) !== acc.pw.hash) throw bad();
+    return { session: { role, id: acc.id, name: acc.name, school: acc.schoolText || (sch && sch.name) || '' } };
+  }
+  if (!pw) throw new Error('Entrez votre mot de passe.');
+  if (role === 'TEACHER') {
+    const names = [...(school.professorsDb || []).map(p => p.name), ...Object.values(school.timetablesDatabase || {}).flat().map(o => o.prof)];
+    const found = names.find(n => bare(n) && bare(n) === bare(id));
+    if (!found) throw bad();
+    return { session: { role, id: found, name: found } };
+  }
+  const sd = school.schoolDatabase || {};
+  for (const l in sd) for (const i in sd[l]) { const s = sd[l][i].find(x => x.code.toLowerCase() === id.trim().toLowerCase()); if (s) return { session: { role: 'STUDENT', id: s.code, name: s.name, cls: `${l} ${i}` } }; }
+  throw bad();
+}
+async function completeSetup(kind, ctx, pw) {
+  const salt = rnd(), hash = await pbkdf2(pw, salt);
+  if (kind === 'owner') { localStorage.setItem(OWNER_KEY, JSON.stringify({ id: ctx.id, salt, hash })); return { role: 'SUPER_ADMIN', id: ctx.id, name: 'Propriétaire' }; }
+  const sup = readJson(SUPER_KEY) || {}, a = (sup.admins || []).find(x => x.id === ctx.acc.id);
+  if (!a) throw new Error('Compte introuvable.');
+  a.pw = { salt, hash }; localStorage.setItem(SUPER_KEY, JSON.stringify(sup));
+  return { role: 'ADMIN', id: a.id, name: a.name, school: a.schoolText || '' };
+}
+
+// ===== Session et redirection =====
+let entering = false;
+function startSession(s, remember) {
+  entering = true;
+  const base = { role: s.role, id: s.id, name: s.name, school: s.school, cls: s.cls };
+  sessionStorage.setItem('scolaci_session', JSON.stringify(Object.assign({}, base, { exp: Date.now() + 8 * 36e5 })));
+  // « Rester connecté » : la session est gardée sur l'appareil et se prolonge à chaque utilisation. Aucun mot de passe n'est conservé.
+  if (remember) { const days = DAYS_BY_ROLE[s.role] || 7; localStorage.setItem(REMEMBER_KEY, JSON.stringify(Object.assign({}, base, { days, exp: Date.now() + days * 864e5 }))); }
+  else localStorage.removeItem(REMEMBER_KEY);
+  localStorage.setItem('scolaci_user_role', s.role); localStorage.setItem('scolaci_user_id', s.id);   // compatibilité avec d'anciennes pages
+  localStorage.removeItem(LOCK_KEY);
+  window.location.href = ROUTES[s.role];
+}
+const lockLeft = () => { const l = readJson(LOCK_KEY); return l && l.until > Date.now() ? l.until - Date.now() : 0; };
+function noteFailure() { const l = readJson(LOCK_KEY) || { n: 0 }; l.n = (l.n || 0) + 1; if (l.n >= 5) { l.until = Date.now() + 5 * 6e4; l.n = 0; } localStorage.setItem(LOCK_KEY, JSON.stringify(l)); }
+
+// ===== Interface =====
+const role = () => document.querySelector('input[name="role"]:checked').value;
+const LABELS = { STUDENT: ['Matricule', 'Ex: CI-2026-897'], TEACHER: ['Nom ou identifiant', 'Ex: M. Kouassi'], ADMIN: ["Code d'accès", 'Ex: ADM-XXXXXXXX'], SUPER_ADMIN: ['Identifiant', 'Votre identifiant'] };
+const touch = !!(window.matchMedia && matchMedia('(pointer:coarse)').matches);
+function updateLabels() {
+  const [l, p] = LABELS[role()]; $('idLabel').textContent = l; $('identifier').placeholder = p; $('msg').textContent = '';
+  $('remember').checked = touch && role() !== 'SUPER_ADMIN';   // coché d'office sur téléphone et tablette, jamais pour le propriétaire
+  $('rememberNote').textContent = `Reste connecté ${DAYS_BY_ROLE[role()]} jours si vous l'utilisez. À éviter sur un appareil partagé.`;
+}
+document.querySelectorAll('input[name="role"]').forEach(r => r.addEventListener('change', updateLabels));
+$('ownerLink').onclick = () => { $('ownerTile').classList.add('show'); document.querySelector('input[value="SUPER_ADMIN"]').checked = true; updateLabels(); $('identifier').focus(); };
+function toggleEye(id, b) { const i = $(id), show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.textContent = show ? 'Masquer' : 'Voir'; }
+function say(id, t, info) { const m = $(id); m.textContent = t; m.className = 'msg' + (info ? ' info' : ''); }
+if (DEMO_MODE) {
+  $('demo').style.display = 'block'; $('previews').hidden = false;
+  [['pv1', 'STUDENT'], ['pv2', 'TEACHER'], ['pv3', 'ADMIN'], ['pv4', 'SUPER_ADMIN']].forEach(function (x) { $(x[0]).href = ROUTES[x[1]] + '?apercu'; });
+}
+let pending = null;
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const left = lockLeft(); if (left) { say('msg', `Trop de tentatives. Réessayez dans ${Math.ceil(left / 6e4)} min.`); return; }
+  const r = role(), id = $('identifier').value.trim(), pw = $('password').value;
+  if (!id) { say('msg', 'Renseignez votre ' + LABELS[r][0].toLowerCase() + '.'); return; }
+  $('go').disabled = true; say('msg', 'Vérification…', true);
+  try {
+    const res = await authenticate(r, id, pw);
+    if (res.setup) { pending = { r, res }; showSetup(res.setup); }
+    else startSession(res.session, $('remember').checked);
+  } catch (err) { if (err.message === bad().message) noteFailure(); say('msg', err.message); }
+  $('go').disabled = false;
+}
+function showSetup(kind) {
+  $('stepLogin').hidden = true; $('stepSetup').hidden = false; $('np1').value = $('np2').value = ''; $('msg2').textContent = '';
+  $('setupTitle').textContent = kind === 'owner' ? 'Créez votre accès propriétaire' : 'Choisissez votre mot de passe';
+  $('setupHint').textContent = kind === 'owner' ? 'Première configuration : ce mot de passe protège la tour de contrôle (10 caractères minimum).' : 'Première connexion : le code ne servira plus. Choisissez un mot de passe personnel (8 caractères minimum).';
+  $('np1').focus();
+}
+function backToLogin() { pending = null; $('stepSetup').hidden = true; $('stepLogin').hidden = false; $('password').value = ''; }
+async function handleSetup(e) {
+  e.preventDefault(); if (!pending) return;
+  const kind = pending.res.setup, min = kind === 'owner' ? 10 : 8, a = $('np1').value, b = $('np2').value;
+  if (a.length < min) { say('msg2', `Au moins ${min} caractères.`); return; }
+  if (a !== b) { say('msg2', 'Les deux mots de passe ne correspondent pas.'); return; }
+  $('goSetup').disabled = true; say('msg2', 'Enregistrement…', true);
+  try { startSession(await completeSetup(kind, pending.res, a), $('remember').checked); } catch (err) { say('msg2', err.message); $('goSetup').disabled = false; }
+}
+// ===== Entrée directe : un appareil reconnu ouvre l'espace sans reconnexion =====
+// En mode serveur, cette étape doit présenter un jeton révocable vérifié par le serveur (pas seulement ce contrôle local).
+async function stillValid(r) {
+  const school = readJson(SCHOOL_KEY) || {}, sup = readJson(SUPER_KEY) || {};
+  if (r.role === 'SUPER_ADMIN') return !!readJson(OWNER_KEY);
+  if (r.role === 'ADMIN') { const a = (sup.admins || []).find(x => x.id === r.id); if (!a || !a.ok) return false; const sch = (sup.schools || []).find(x => x.id === a.school); return !(sch && sch.status === 'suspended'); }
+  if (r.role === 'TEACHER') { const names = [...(school.professorsDb || []).map(p => p.name), ...Object.values(school.timetablesDatabase || {}).flat().map(o => o.prof)]; return names.some(n => bare(n) && bare(n) === bare(r.id)); }
+  const sd = school.schoolDatabase || {}; for (const l in sd) for (const i in sd[l]) if (sd[l][i].some(x => x.code === r.id)) return true; return false;
+}
+(async function autoEnter() {
+  try {
+    const r = readJson(REMEMBER_KEY);
+    if (!r) return;
+    if (!(r.exp > Date.now()) || !ROUTES[r.role]) { localStorage.removeItem(REMEMBER_KEY); return; }
+    if (/[?&]switch\b/.test(location.search) || !DEMO_MODE) return;
+    if (!(await stillValid(r))) { localStorage.removeItem(REMEMBER_KEY); say('msg', 'Votre accès a changé. Reconnectez-vous.'); return; }
+    startSession(r, true);
+  } catch (e) {} finally { if (!entering) document.body.classList.remove('checking'); }
+})();
+setTimeout(function () { document.body.classList.remove('checking'); }, 2500);
+updateLabels();
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+</script>
+</body>
+</html>

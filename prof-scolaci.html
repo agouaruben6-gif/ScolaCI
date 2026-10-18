@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Espace Enseignant — ScolACI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f2ee;--surface:#fff;--ink:#14151a;--muted:#74766f;--line:#e7e3da;--gold:#c9a24d;--gold-deep:#8a6a22;--gold-soft:#f7f0de;--ok:#1f9d63;--ok-soft:#e1f6ea;--warn:#b36a0a;--warn-soft:#fdf0e2;--danger:#d93a2f;--danger-soft:#fdeceb;--r:18px;--r-sm:12px;--shadow:0 1px 2px rgba(20,21,26,.04),0 12px 32px rgba(20,21,26,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:radial-gradient(1000px 420px at 85% -10%,#efe7d3,transparent 60%),var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;padding:max(20px,env(safe-area-inset-top)) 20px 40px}
+.shell{max-width:1040px;margin:0 auto}
+button,input,select{font-family:inherit}
+
+.hero{background:linear-gradient(135deg,#1a1b22,#0b0c10);color:#fff;border-radius:24px;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid rgba(201,162,77,.3);box-shadow:0 20px 44px rgba(14,16,21,.22);margin-bottom:18px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-80px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(201,162,77,.28),transparent 70%)}
+.hero small{color:#e3c67a;letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:600}
+.hero h1{font-family:"Cormorant Garamond",serif;font-size:36px;line-height:1.1;margin:6px 0 12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);font-size:12.5px;font-weight:600}.chip b{color:#f3dc9b}
+.logout-btn{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,.08);color:#ffb4ae;border:1px solid rgba(255,255,255,.16);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.logout-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.classbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);padding:18px 22px;box-shadow:var(--shadow);margin-bottom:18px}
+.classbar b{display:block;font-size:15px}.classbar span{font-size:12.5px;color:var(--muted)}
+.classbar select{min-width:240px}
+
+.tabs{display:flex;gap:10px;margin-bottom:20px}
+.tab-btn{display:flex;align-items:center;gap:9px;padding:11px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-weight:600;font-size:13.5px;cursor:pointer;white-space:nowrap}
+.tab-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab-btn.active{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;border-color:#0e1015;box-shadow:0 8px 20px rgba(14,16,21,.25)}
+.panel{display:none}.panel.active{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.panel.active{animation:none}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:26px;margin-bottom:20px;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.card-title{font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:700;display:flex;align-items:center;gap:10px}
+.card-title::before{content:"";width:4px;height:20px;border-radius:4px;background:var(--gold)}
+.sub{color:var(--muted);font-size:13px;margin:-8px 0 18px 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+label.l{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:#3b4a43}
+input,select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--r-sm);font-size:14px;background:#fbfcfb;color:var(--ink);outline:none}
+input:focus,select:focus{border-color:#b8934a;box-shadow:0 0 0 4px rgba(201,162,77,.18);background:#fff}
+input[readonly]{background:#f1efe9}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:var(--r-sm);font-size:13.5px;font-weight:600;border:0;cursor:pointer;background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;box-shadow:0 8px 20px rgba(14,16,21,.25)}
+.btn-gold{background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;box-shadow:0 8px 20px rgba(184,147,74,.35)}
+.btn-ghost{background:var(--gold-soft);color:var(--gold-deep);box-shadow:none}
+.row-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:18px}
+.empty{text-align:center;color:var(--muted);padding:34px 14px}
+
+.sumbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.pill{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700}
+.p-ok{background:var(--ok-soft);color:var(--ok)}.p-warn{background:var(--warn-soft);color:var(--warn)}.p-no{background:var(--danger-soft);color:var(--danger)}.p-gold{background:var(--gold-soft);color:var(--gold-deep)}
+
+.stu{border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:10px;background:#fff}
+.stu-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.stu strong{display:block}.stu small{color:var(--muted)}
+.segs{display:flex;gap:6px;flex-wrap:wrap}
+.seg input{display:none}
+.seg span{display:inline-block;padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg-P input:checked+span{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.seg-R input:checked+span{background:var(--warn-soft);border-color:#e08a1e;color:var(--warn)}
+.seg-A input:checked+span{background:var(--danger-soft);border-color:var(--danger);color:var(--danger)}
+.seg-E input:checked+span{background:var(--gold-soft);border-color:var(--gold);color:var(--gold-deep)}
+.stu .note{margin-top:10px;padding:9px 12px;font-size:13px}
+.gline{display:grid;grid-template-columns:110px 1fr;gap:10px;margin-top:10px}
+.gline input[type=number]{text-align:center;font-weight:800;font-size:16px}
+
+.week{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.day{background:#fbfcfb;border:1px solid var(--line);border-radius:var(--r-sm);padding:14px}
+.day.today{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,77,.18);background:#fffdf7}
+.day h4{font-size:13px;font-weight:800;margin-bottom:10px;color:var(--gold-deep);display:flex;justify-content:space-between}
+.slot{border-left:3px solid var(--gold);background:#fff;border-radius:8px;padding:9px 11px;margin-bottom:8px;font-size:12.5px;box-shadow:0 1px 3px rgba(20,21,26,.05)}
+.slot b{display:block;font-size:14px}.slot small{color:var(--muted)}.none{color:#b3beb8;font-size:12.5px}
+
+.fab{position:fixed;right:22px;bottom:calc(22px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#14151a;font-size:26px;cursor:pointer;box-shadow:0 12px 28px rgba(184,147,74,.5);z-index:40}
+.modal{display:none;position:fixed;right:22px;bottom:calc(92px + env(safe-area-inset-bottom));width:min(410px,calc(100vw - 24px));height:min(560px,72vh);background:#fff;border-radius:22px;box-shadow:0 24px 54px rgba(14,16,21,.28);border:1px solid var(--line);z-index:41;flex-direction:column;overflow:hidden}
+.m-head{background:linear-gradient(135deg,#1a1b22,#0b0c10);color:#fff;padding:16px 18px;display:flex;justify-content:space-between;align-items:center}
+.m-head b{display:block;font-family:"Cormorant Garamond",serif;font-size:20px;color:#f3dc9b}.m-head small{opacity:.7;font-size:11.5px}
+.m-head button{background:none;border:0;color:#fff;font-size:20px;cursor:pointer}
+#aiMsgs{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;background:#f8f6f1}
+.msg{max-width:88%;padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.55}
+.msg.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;align-self:flex-end;border-bottom-right-radius:4px}
+.sugg{padding:10px 12px;display:flex;gap:8px;overflow-x:auto;border-top:1px solid var(--line);background:#fff}
+.sugg button{background:var(--gold-soft);border:1px solid #ecdcae;color:var(--gold-deep);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer}
+.m-in{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#fff}
+.m-in input{flex:1}.m-in button{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;border:0;padding:0 18px;border-radius:12px;font-weight:700;cursor:pointer}
+
+@media(max-width:700px){
+  body{padding:max(14px,env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom))}
+  .hero{padding:22px 20px;border-radius:20px;flex-direction:column;align-items:flex-start}.hero h1{font-size:29px}
+  .classbar select{min-width:0;width:100%}.classbar>div:last-child{width:100%}
+  .card{padding:18px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;margin:0;gap:0;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);z-index:30}
+  .tab-btn{flex:1;flex-direction:column;gap:3px;padding:8px 2px;border:0;background:none;box-shadow:none;border-radius:12px;font-size:10.5px}
+  .tab-btn.active{background:var(--gold-soft);color:var(--gold-deep);box-shadow:none}
+  .fab{bottom:calc(86px + env(safe-area-inset-bottom));width:54px;height:54px;font-size:23px}
+  .modal{right:12px;bottom:calc(150px + env(safe-area-inset-bottom));height:min(520px,62vh)}
+}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0c10">
+<script>/* Accès réservé + mode aperçu. Sans connexion, la page affiche un écran d'accueil avec un lien vers la connexion et un aperçu en données d'exemple (stockage en mémoire : rien de réel n'est lu ni écrit). Ce contrôle est côté navigateur : il doit être doublé par une vérification serveur. */(function(){
+var ROLE='TEACHER',ME=["M. Kouassi", "M. Kouassi"],SAMPLE={"schoolDatabase":{"6ème":{"1":[]},"Terminale":{"1":[{"name":"Agoua Ruben","code":"CI-2026-897"},{"name":"Koffi Emmanuel","code":"CI-2026-898"},{"name":"Kassi Estelle","code":"CI-2026-905"},{"name":"Traoré Mohamed","code":"CI-2026-906"}],"2":[]}},"timetablesDatabase":{"Terminale 1":[{"id":1,"day":"Lundi","time":"08:00 - 10:00","subject":"Mathématiques","prof":"M. Kouassi"},{"id":2,"day":"Mardi","time":"10:15 - 12:15","subject":"Physique-Chimie","prof":"M. Koffi"},{"id":3,"day":"Mercredi","time":"08:00 - 10:00","subject":"Mathématiques","prof":"M. Kouassi"},{"id":4,"day":"Jeudi","time":"15:00 - 17:00","subject":"Français","prof":"Mme Traoré"},{"id":5,"day":"Vendredi","time":"08:00 - 10:00","subject":"Anglais","prof":"M. Diallo"}]},"receivedGradesDatabase":{"Terminale 1":[{"code":"CI-2026-897","name":"Agoua Ruben","grade":"15.2","comment":"Moyenne de 2 matières","status":"Transmis par M. Kouassi, M. Koffi","subjects":[{"subject":"Mathématiques","prof":"M. Kouassi","grade":"15.6","comment":"Excellent trimestre, régulier."},{"subject":"Physique-Chimie","prof":"M. Koffi","grade":"14.8","comment":"Bon travail."}]},{"code":"CI-2026-898","name":"Koffi Emmanuel","grade":"13.2","comment":"Bon travail, des progrès.","status":"Transmis par M. Kouassi"},{"code":"CI-2026-905","name":"Kassi Estelle","grade":"16.8","comment":"Très rigoureuse.","status":"Transmis par M. Kouassi"}]},"publishedBulletins":{"Terminale 1":true},"attendanceDatabase":{"Terminale 1":{"2026-09-11#08:00 - 10:00":{"CI-2026-897":{"s":"A","note":"Non justifié","subject":"Mathématiques","time":"08:00 - 10:00"},"CI-2026-898":{"s":"P"}},"2026-09-04#10:15 - 12:15":{"CI-2026-897":{"s":"R","note":"10 min","subject":"Physique-Chimie","time":"10:15 - 12:15"},"CI-2026-898":{"s":"A","subject":"Physique-Chimie","time":"10:15 - 12:15"}}}},"feesDatabase":{"annual":0,"byLevel":{"Terminale":200000,"6ème":120000},"discounts":{},"payments":[{"id":1,"code":"CI-2026-897","amount":200000,"mode":"Wave","ref":"Solde","date":"2026-10-02"},{"id":2,"code":"CI-2026-898","amount":80000,"mode":"Orange Money","ref":"Tranche 1","date":"2026-10-05"}]},"announcementsDb":[{"id":1,"title":"Réunion d'orientation des Terminales","message":"Toutes les classes de Terminale sont convoquées à la grande salle ce samedi à 09h00.","date":"16/10/2026"}],"professorsDb":[{"id":1,"name":"M. Kouassi","subject":"Mathématiques","classes":["Terminale 1"]}]},L=location.pathname.indexOf('/pages/')>-1?'../../login.html':'login.html',BASE=location.href.split(/[?#]/)[0];
+function fixLinks(){document.querySelectorAll('a[href$="login.html"]').forEach(function(x){x.setAttribute('href',L)})}
+function ribbon(){var d=document.createElement('div');d.textContent="Aperçu · données d'exemple · rien n'est enregistré";d.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;background:#c9a24d;color:#1b1608;font:700 12px sans-serif;padding:6px 14px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap';document.body.appendChild(d)}
+function gate(){var d=document.createElement('div');d.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:100000;background:#0b0c10;color:#f1ede3;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow:auto';d.innerHTML='<div style="max-width:380px"><h1 style="font-size:28px;color:#f3dc9b;margin-bottom:10px">Accès réservé</h1><p style="color:#b9bcc8;margin-bottom:22px;line-height:1.5">Connectez-vous pour ouvrir cet espace. Ouvrez la page <b>login.html</b>, située dans le même dossier.</p><a href="'+L+'" style="display:block;padding:14px;border-radius:12px;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;font-weight:800;text-decoration:none;margin-bottom:10px">Se connecter</a><a href="'+BASE+'?apercu" style="display:block;padding:12px;border-radius:12px;border:1px solid #3a3f4d;color:#f3dc9b;text-decoration:none;font-weight:600">Voir un aperçu avec des données d\'exemple</a></div>';document.body.appendChild(d)}
+function mem(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}
+if(/[?&]apercu(=|&|$)/.test(location.search)){
+  var ls=mem(),ss=mem();
+  try{Object.defineProperty(window,'localStorage',{value:ls,configurable:true});Object.defineProperty(window,'sessionStorage',{value:ss,configurable:true})}catch(e){}
+  ls.setItem('scolaci_db_v1',JSON.stringify(SAMPLE));ss.setItem('scolaci_session',JSON.stringify({role:ROLE,id:ME[0],name:ME[1],exp:Date.now()+36e5}));
+  document.addEventListener('DOMContentLoaded',function(){fixLinks();ribbon()});return;
+}
+document.addEventListener('DOMContentLoaded',fixLinks);
+var ok=false;try{var s=JSON.parse(sessionStorage.getItem('scolaci_session')||'null');ok=!!(s&&s.role===ROLE&&s.exp>Date.now())}catch(e){}
+if(!ok){try{var r=JSON.parse(localStorage.getItem('scolaci_remember')||'null');if(r&&r.role===ROLE&&r.exp>Date.now()){location.replace(L);return}}catch(e){}document.addEventListener('DOMContentLoaded',gate)}
+})();</script>
+</head>
+<body>
+<div class="shell">
+  <header class="hero">
+    <div style="position:relative;z-index:1">
+      <small>Espace Enseignant</small>
+      <h1 id="hName">Enseignant</h1>
+      <div class="chips"><span class="chip">Discipline <b id="hSubject">—</b></span><span class="chip">Classes <b id="hCount">0</b></span></div>
+    </div>
+    <a href="../../login.html" onclick="scolaciLogout()" class="logout-btn"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Déconnexion</a>
+  </header>
+
+  <div class="classbar">
+    <div><b>Classe active</b><span>Changez de classe pour actualiser l'appel et les notes</span></div>
+    <div><select id="currentClass" onchange="changeClass()" style="font-weight:700"></select></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="switchTab('attendance', this)"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>Appel</button>
+    <button class="tab-btn" onclick="switchTab('grades', this)"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Notes</button>
+    <button class="tab-btn" onclick="switchTab('schedule', this)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Emploi du temps</button>
+  </nav>
+
+  <main>
+    <section id="panel-attendance" class="panel active">
+      <div class="card">
+        <div class="card-head"><div class="card-title" id="attTitle">Prise d'appel</div><button class="btn" onclick="submitAttendance()">Enregistrer l'appel</button></div>
+        <datalist id="slotList"></datalist>
+        <div class="grid">
+          <div><label class="l">Date du cours</label><input type="date" id="attDate" onchange="renderAtt(true)"></div>
+          <div><label class="l">Créneau horaire</label><input type="text" id="attTime" list="slotList" placeholder="Ex: 08:00 - 10:00" onchange="renderAtt()"></div>
+          <div><label class="l">Matière</label><input type="text" id="attSubject" readonly></div>
+        </div>
+        <div class="sumbar" id="attSum"></div>
+        <div id="attList"></div>
+        <div class="row-actions"><button class="btn btn-ghost" onclick="allPresent()">Tout le monde présent</button><button class="btn" onclick="submitAttendance()">Enregistrer l'appel</button></div>
+      </div>
+    </section>
+
+    <section id="panel-grades" class="panel">
+      <div class="card">
+        <div class="card-head"><div class="card-title" id="gTitle">Moyennes</div><button class="btn btn-gold" onclick="sendGrades()">Transmettre à l'administration</button></div>
+        <p class="sub">Entrez les moyennes de la classe. Elles sont envoyées à l'administration, qui diffuse ensuite les bulletins.</p>
+        <datalist id="subjList"></datalist>
+        <div class="grid"><div><label class="l">Matière</label><input type="text" id="gSubject" list="subjList" onchange="renderGrades()"></div></div>
+        <div class="sumbar" id="gSum"></div>
+        <div id="gList"></div>
+        <div class="row-actions"><button class="btn btn-ghost" onclick="autoComments()">Générer les appréciations manquantes</button><button class="btn btn-gold" onclick="sendGrades()">Transmettre à l'administration</button></div>
+      </div>
+    </section>
+
+    <section id="panel-schedule" class="panel">
+      <div class="card"><div class="card-head"><div class="card-title">Mon emploi du temps</div></div><div id="schedContent"></div></div>
+    </section>
+  </main>
+</div>
+
+<button class="fab" onclick="toggleAIChat()" aria-label="Assistant pédagogique">✨</button>
+<div class="modal" id="aiModal">
+  <div class="m-head"><div><b>Assistant pédagogique</b><small>Exercices, contrôles et appréciations</small></div><button onclick="toggleAIChat()" aria-label="Fermer">✕</button></div>
+  <div id="aiMsgs"><div class="msg bot" id="aiHello"></div></div>
+  <div class="sugg">
+    <button onclick="useSuggestion('Un exercice sur les dérivées')">Exercice</button>
+    <button onclick="useSuggestion('Prépare un contrôle')">Contrôle</button>
+    <button onclick="useSuggestion('Appréciation pour une moyenne de 13')">Appréciation</button>
+  </div>
+  <div class="m-in"><input type="text" id="aiInput" placeholder="Demandez un exercice, un contrôle…" onkeypress="if(event.key==='Enter')sendAIMessage()"><button onclick="sendAIMessage()">Envoyer</button></div>
+</div>
+
+<script>
+// La page de connexion doit enregistrer :  localStorage.setItem('scolaci_teacher_name', 'M. Kouassi')
+const DB_KEY = 'scolaci_db_v1';
+const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+const E = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+const bare = n => norm(n).replace(/^(m|mme|mlle|mr|dr|prof)\s+/, '');
+const sameProf = (a, b) => { const x = bare(a), y = bare(b); return !!x && !!y && (x === y || x.includes(y) || y.includes(x)); };
+const db = () => { try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; } catch (e) { return {}; } };
+function saveDb(mut) { try { const d = db(); mut(d); localStorage.setItem(DB_KEY, JSON.stringify(d)); return true; } catch (e) { alert("Enregistrement impossible : " + e.message); return false; } }
+const startMin = t => { const m = String(t).match(/(\d{1,2})\s*[h:]?\s*(\d{2})?/); return m ? +m[1] * 60 + (+m[2] || 0) : 0; };
+const dayOf = iso => DAYS[(new Date(iso + 'T00:00:00').getDay() + 6) % 7];
+const todayIso = () => new Date().toISOString().slice(0, 10);
+function scolaciLogout() {
+  sessionStorage.removeItem('scolaci_session'); Object.keys(localStorage).filter(k => !k.startsWith('scolaci_db_')).forEach(k => localStorage.removeItem(k)); }
+
+const ME = () => { try { return JSON.parse(sessionStorage.getItem('scolaci_session')).name; } catch (e) { return localStorage.getItem('scolaci_teacher_name') || 'M. Kouassi'; } };
+let CLS = localStorage.getItem('scolaci_teacher_class') || '';
+let ROWS = [];
+
+const myTT = d => { const out = []; for (const k in (d.timetablesDatabase || {})) d.timetablesDatabase[k].filter(o => sameProf(o.prof, ME())).forEach(o => out.push({ ...o, cls: k })); return out; };
+function myClasses(d) {
+  const s = new Set(myTT(d).map(o => o.cls));
+  (d.professorsDb || []).filter(p => sameProf(p.name, ME())).forEach(p => p.classes.forEach(c => s.add(c)));
+  return [...s].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+function mySubjects(d, cls) {
+  const s = new Set(myTT(d).filter(o => !cls || o.cls === cls).map(o => o.subject));
+  (d.professorsDb || []).filter(p => sameProf(p.name, ME()) && p.subject).forEach(p => s.add(p.subject));
+  return [...s];
+}
+function studentsOf(d, cls) {
+  const sd = d.schoolDatabase || {}, l = Object.keys(sd).find(x => cls.startsWith(x + ' '));
+  return l ? (sd[l][cls.slice(l.length + 1)] || []).slice().sort((a, b) => a.name.localeCompare(b.name)) : [];
+}
+
+function render() {
+  const d = db(), classes = myClasses(d), subs = mySubjects(d);
+  document.getElementById('hName').textContent = ME();
+  document.getElementById('hSubject').textContent = subs.join(', ') || '—';
+  document.getElementById('hCount').textContent = classes.length;
+  if (!classes.includes(CLS)) CLS = classes[0] || '';
+  const sel = document.getElementById('currentClass');
+  sel.innerHTML = classes.length ? classes.map(c => `<option ${c === CLS ? 'selected' : ''}>${E(c)}</option>`).join('') : '<option>Aucune classe attribuée</option>';
+  sel.disabled = !classes.length;
+  document.getElementById('aiHello').textContent = `Bonjour ${ME()} ! Je peux préparer des exercices avec corrigé, un contrôle ou des appréciations de bulletin. Dites-moi le niveau et le chapitre.`;
+  renderSched(d);
+}
+function changeClass() { CLS = document.getElementById('currentClass').value; localStorage.setItem('scolaci_teacher_class', CLS); renderAtt(true); renderGrades(); }
+
+// ===== Appel =====
+const SEG = [['P', 'Présent'], ['R', 'Retard'], ['A', 'Absent'], ['E', 'Excusé']];
+function slotsFor(d, cls, iso) { const day = dayOf(iso); return myTT(d).filter(o => o.cls === cls && o.day === day).sort((a, b) => startMin(a.time) - startMin(b.time)); }
+function renderAtt(resetTime) {
+  const d = db(), dateEl = document.getElementById('attDate'), timeEl = document.getElementById('attTime');
+  if (!dateEl.value) dateEl.value = todayIso();
+  document.getElementById('attTitle').textContent = CLS ? `Prise d'appel — ${CLS}` : "Prise d'appel";
+  const list = document.getElementById('attList');
+  if (!CLS) { list.innerHTML = "<p class='empty'>Aucune classe ne vous est attribuée pour le moment. Contactez l'administration.</p>"; document.getElementById('attSum').innerHTML = ''; return; }
+  const slots = slotsFor(d, CLS, dateEl.value);
+  document.getElementById('slotList').innerHTML = slots.map(s => `<option value="${E(s.time)}">${E(s.subject)}</option>`).join('');
+  if (resetTime || !timeEl.value) timeEl.value = slots[0] ? slots[0].time : '';
+  const slot = slots.find(s => s.time === timeEl.value.trim());
+  document.getElementById('attSubject').value = slot ? slot.subject : (mySubjects(d, CLS)[0] || '');
+  const key = `${dateEl.value}#${timeEl.value.trim()}`, saved = ((d.attendanceDatabase || {})[CLS] || {})[key] || {};
+  ROWS = studentsOf(d, CLS);
+  list.innerHTML = ROWS.length ? ROWS.map((s, i) => {
+    const v = saved[s.code], st = v ? (typeof v === 'string' ? v : v.s) : 'P', note = v && typeof v === 'object' ? v.note || '' : '';
+    return `<div class="stu"><div class="stu-top"><div><strong>${E(s.name)}</strong><small>${E(s.code)}</small></div><div class="segs">` +
+      SEG.map(([c, t]) => `<label class="seg seg-${c}"><input type="radio" name="s_${i}" value="${c}" ${st === c ? 'checked' : ''} onchange="attSummary()"><span>${t}</span></label>`).join('') +
+      `</div></div><input class="note" id="n_${i}" placeholder="Remarque (optionnel)" value="${E(note)}"></div>`;
+  }).join('') : "<p class='empty'>Aucun élève inscrit dans cette classe.</p>";
+  attSummary(saved && Object.keys(saved).length ? 'Appel déjà enregistré pour ce créneau : vous pouvez le modifier.' : '');
+}
+const statusOf = i => { const r = document.querySelector(`input[name="s_${i}"]:checked`); return r ? r.value : 'P'; };
+function attSummary(msg) {
+  const c = { P: 0, R: 0, A: 0, E: 0 }; ROWS.forEach((s, i) => c[statusOf(i)]++);
+  document.getElementById('attSum').innerHTML = `<span class="pill p-ok">${c.P} présent(s)</span><span class="pill p-warn">${c.R} retard(s)</span><span class="pill p-no">${c.A} absent(s)</span><span class="pill p-gold">${c.E} excusé(s)</span>` + (typeof msg === 'string' && msg ? `<span class="pill p-gold">${E(msg)}</span>` : '');
+}
+function allPresent() { ROWS.forEach((s, i) => { const r = document.querySelector(`input[name="s_${i}"][value="P"]`); if (r) r.checked = true; }); attSummary(); }
+function submitAttendance() {
+  const date = document.getElementById('attDate').value, time = document.getElementById('attTime').value.trim(), subject = document.getElementById('attSubject').value;
+  if (!CLS || !ROWS.length) { alert("Aucune classe ou aucun élève à enregistrer."); return; }
+  if (!time) { alert("Indiquez le créneau horaire du cours."); return; }
+  const map = {}; ROWS.forEach((s, i) => { map[s.code] = { s: statusOf(i), note: document.getElementById('n_' + i).value.trim(), subject, time, prof: ME() }; });
+  if (!saveDb(d => { d.attendanceDatabase = d.attendanceDatabase || {}; (d.attendanceDatabase[CLS] = d.attendanceDatabase[CLS] || {})[`${date}#${time}`] = map; })) return;
+  const a = Object.values(map).filter(v => v.s === 'A').length;
+  alert(`Appel de ${CLS} enregistré (${a} absent(s)). L'administration et les élèves peuvent le consulter.`);
+}
+
+// ===== Notes =====
+const band = g => g >= 16 ? "Excellent trimestre. Résultats remarquables, félicitations." : g >= 14 ? "Très bon trimestre. Élève sérieux(se) et motivé(e)." : g >= 12 ? "Bon trimestre. Il faut maintenir l'effort." : g >= 10 ? "Résultats corrects mais fragiles. Plus de régularité attendue." : g >= 8 ? "Résultats insuffisants. Un effort soutenu est nécessaire." : "Résultats très insuffisants. Un accompagnement est indispensable.";
+function renderGrades() {
+  const d = db(), subEl = document.getElementById('gSubject'), list = document.getElementById('gList');
+  document.getElementById('gTitle').textContent = CLS ? `Moyennes — ${CLS}` : 'Moyennes';
+  const subs = mySubjects(d, CLS); document.getElementById('subjList').innerHTML = subs.map(s => `<option value="${E(s)}">`).join('');
+  if (!subEl.value) subEl.value = subs[0] || '';
+  if (!CLS) { list.innerHTML = "<p class='empty'>Aucune classe attribuée.</p>"; document.getElementById('gSum').innerHTML = ''; return; }
+  ROWS = studentsOf(d, CLS); const recs = (d.receivedGradesDatabase || {})[CLS] || [];
+  list.innerHTML = ROWS.length ? ROWS.map((s, i) => {
+    const rec = recs.find(r => r.code === s.code), sj = rec && (rec.subjects || []).find(x => norm(x.subject) === norm(subEl.value) && sameProf(x.prof, ME()));
+    return `<div class="stu"><div class="stu-top"><div><strong>${E(s.name)}</strong><small>${E(s.code)}</small></div>${sj ? '<span class="pill p-ok">Transmis</span>' : ''}</div>
+      <div class="gline"><input type="number" id="g_${i}" min="0" max="20" step="0.1" inputmode="decimal" placeholder="/20" value="${sj ? E(sj.grade) : ''}" oninput="gradeSummary()"><input type="text" id="c_${i}" placeholder="Appréciation" value="${sj ? E(sj.comment || '') : ''}"></div></div>`;
+  }).join('') : "<p class='empty'>Aucun élève inscrit dans cette classe.</p>";
+  gradeSummary();
+}
+function gradeSummary() { const n = ROWS.filter((s, i) => document.getElementById('g_' + i).value !== '').length; document.getElementById('gSum').innerHTML = `<span class="pill p-gold">${n} / ${ROWS.length} moyennes saisies</span>`; }
+function autoComments() { ROWS.forEach((s, i) => { const g = parseFloat(document.getElementById('g_' + i).value), c = document.getElementById('c_' + i); if (!isNaN(g) && !c.value.trim()) c.value = band(g); }); }
+function sendGrades() {
+  const subject = document.getElementById('gSubject').value.trim();
+  if (!CLS || !subject) { alert("Choisissez la classe et la matière."); return; }
+  const items = [];
+  for (let i = 0; i < ROWS.length; i++) {
+    const raw = document.getElementById('g_' + i).value; if (raw === '') continue;
+    const g = parseFloat(raw); if (isNaN(g) || g < 0 || g > 20) { alert(`La moyenne de ${ROWS[i].name} doit être comprise entre 0 et 20.`); return; }
+    items.push({ s: ROWS[i], g, c: document.getElementById('c_' + i).value.trim() });
+  }
+  if (!items.length) { alert("Saisissez au moins une moyenne."); return; }
+  if (!saveDb(d => {
+    d.receivedGradesDatabase = d.receivedGradesDatabase || {}; const recs = (d.receivedGradesDatabase[CLS] = d.receivedGradesDatabase[CLS] || []);
+    items.forEach(({ s, g, c }) => {
+      let r = recs.find(x => x.code === s.code); if (!r) recs.push(r = { code: s.code, name: s.name });
+      r.subjects = (r.subjects || []).filter(x => !(norm(x.subject) === norm(subject) && sameProf(x.prof, ME())));
+      r.subjects.push({ subject, prof: ME(), grade: g.toFixed(1), comment: c });
+      r.grade = (r.subjects.reduce((t, x) => t + parseFloat(x.grade), 0) / r.subjects.length).toFixed(1);
+      r.comment = r.subjects.length === 1 ? (c || band(g)) : `Moyenne de ${r.subjects.length} matières`;
+      r.status = 'Transmis par ' + [...new Set(r.subjects.map(x => x.prof))].join(', ');
+    });
+  })) return;
+  alert(`${items.length} moyenne(s) de ${subject} transmises à l'administration pour ${CLS}.`);
+  renderGrades();
+}
+
+// ===== Emploi du temps =====
+function renderSched(d) {
+  const tt = myTT(d || db()), today = DAYS[(new Date().getDay() + 6) % 7];
+  document.getElementById('schedContent').innerHTML = tt.length ? '<div class="week">' + DAYS.map(day => {
+    const L = tt.filter(o => o.day === day).sort((a, b) => startMin(a.time) - startMin(b.time));
+    return `<div class="day ${day === today ? 'today' : ''}"><h4>${day}${day === today ? '<span class="pill p-gold">Aujourd\'hui</span>' : ''}</h4>` +
+      (L.length ? L.map(o => `<div class="slot"><span class="pill p-gold">${E(o.time)}</span><b>${E(o.cls)}</b><small>${E(o.subject)}${o.room ? ' · Salle ' + E(o.room) : ''}</small></div>`).join('') : '<span class="none">Pas de cours</span>') + '</div>';
+  }).join('') + '</div>' : "<p class='empty'>Aucun cours ne vous est encore attribué dans l'emploi du temps.</p>";
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active'); document.getElementById('panel-' + id).classList.add('active'); window.scrollTo({ top: 0 });
+  if (id === 'grades') renderGrades(); if (id === 'attendance') renderAtt();
+}
+window.addEventListener('storage', e => { if (e.key === DB_KEY) { const keep = CLS; render(); if (CLS !== keep) { renderAtt(true); renderGrades(); } } });
+render(); renderAtt(true); renderGrades();
+
+// ===== Assistant pédagogique =====
+// Vide = assistant local gratuit. Pour Claude : 'https://votre-serveur/api/chat' (voir proxy-claude.js)
+const AI_ENDPOINT = '';
+const aiHistory = [];
+function toggleAIChat() { const m = document.getElementById('aiModal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+function useSuggestion(t) { document.getElementById('aiInput').value = t; sendAIMessage(); }
+const mdLite = s => E(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/^[-*] /gm, '• ').replace(/\n/g, '<br>');
+const EXO = {
+  deriv: ["Dérivées", "Soit f(x) = x³ − 3x² + 2. 1) Calculer f'(x). 2) Étudier son signe. 3) Dresser le tableau de variations de f.", "f'(x) = 3x² − 6x = 3x(x − 2). f' ≥ 0 si x ≤ 0 ou x ≥ 2 : f croît sur ]−∞ ; 0] et sur [2 ; +∞[, décroît sur [0 ; 2]. f(0) = 2 et f(2) = −2."],
+  second: ["Équation du second degré", "Résoudre dans ℝ : 2x² − 5x + 3 = 0.", "Δ = 25 − 24 = 1 > 0. x₁ = (5 − 1)/4 = 1 et x₂ = (5 + 1)/4 = 3/2. S = {1 ; 3/2}."],
+  suite: ["Suites arithmétiques", "Soit (uₙ) arithmétique de premier terme u₀ = 3 et de raison 4. Calculer u₁₀ puis la somme u₀ + … + u₁₀.", "u₁₀ = 3 + 10×4 = 43. Somme = 11 × (3 + 43)/2 = 253."],
+  proba: ["Probabilités", "Une urne contient 4 boules rouges et 6 vertes. On tire simultanément 2 boules. Quelle est la probabilité d'obtenir 2 rouges ?", "P = C(4,2)/C(10,2) = 6/45 = 2/15."],
+  limite: ["Limites", "Calculer la limite en +∞ de f(x) = (2x² − x)/(x² + 3).", "On factorise par x² : f(x) = (2 − 1/x)/(1 + 3/x²) → 2."]
+};
+function localAssistant(msg) {
+  const q = norm(msg);
+  if (/appreciation/.test(q)) { const m = msg.match(/(\d{1,2}(?:[.,]\d+)?)/); if (m) return `<strong>Appréciation (${E(m[1])}/20) :</strong><br>${E(band(parseFloat(m[1].replace(',', '.'))))}`; return "Donnez-moi la moyenne, par exemple : <em>« appréciation pour 13,5 »</em>."; }
+  if (/controle|devoir|evaluation|composition|interro/.test(q)) return "<strong>Trame de contrôle (1 h, sur 20)</strong><br>• Exercice 1 — Application directe du cours (6 pts)<br>• Exercice 2 — Résolution guidée (6 pts)<br>• Problème — Situation plus complexe (6 pts)<br>• Soin, rédaction et justification (2 pts)<br><br>Dites-moi le chapitre et je choisis des exercices avec corrigé.";
+  if (/exercice|exo|probleme/.test(q) || Object.keys(EXO).some(k => q.includes(k.slice(0, 5)))) {
+    const key = /deriv/.test(q) ? 'deriv' : /second|equation/.test(q) ? 'second' : /suite/.test(q) ? 'suite' : /proba/.test(q) ? 'proba' : /limite/.test(q) ? 'limite' : Object.keys(EXO)[Math.floor(Math.random() * 5)], x = EXO[key];
+    return `<strong>Exercice — ${x[0]}</strong><br>${E(x[1])}<br><br><em>Corrigé :</em> ${E(x[2])}`;
+  }
+  return "En mode hors ligne, je propose des <strong>exercices avec corrigé</strong> (dérivées, second degré, suites, probabilités, limites), une <strong>trame de contrôle</strong> et des <strong>appréciations</strong>. Essayez : « exercice sur les suites ».";
+}
+async function sendAIMessage() {
+  const input = document.getElementById('aiInput'), box = document.getElementById('aiMsgs'), msg = input.value.trim(); if (!msg) return;
+  box.insertAdjacentHTML('beforeend', `<div class="msg user">${E(msg)}</div>`); input.value = '';
+  const bot = document.createElement('div'); bot.className = 'msg bot'; bot.style.opacity = '.6'; bot.textContent = 'Préparation…'; box.appendChild(bot); box.scrollTop = box.scrollHeight;
+  aiHistory.push({ role: 'user', content: msg });
+  try {
+    if (!AI_ENDPOINT) throw new Error('local');
+    const r = await fetch(AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: 'teacher', messages: aiHistory.slice(-16) }) });
+    const j = await r.json(); if (!r.ok || j.error) throw new Error(j.error || 'HTTP ' + r.status);
+    aiHistory.push({ role: 'assistant', content: j.text }); bot.innerHTML = mdLite(j.text);
+  } catch (e) { aiHistory.pop(); bot.innerHTML = localAssistant(msg); }
+  bot.style.opacity = ''; box.scrollTop = box.scrollHeight;
+}
+</script>
+</body>
+</html>

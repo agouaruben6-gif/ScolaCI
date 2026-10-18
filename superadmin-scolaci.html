@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tour de contrôle — ScolACI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090a0e;--panel:#12141a;--panel2:#181b23;--line:#262a36;--ink:#f1ede3;--muted:#8d92a0;--gold:#c9a24d;--gold2:#f3dc9b;--ok:#34d399;--warn:#fbbf24;--no:#f87171;--r:18px;--r-sm:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:radial-gradient(900px 480px at 85% -8%,rgba(201,162,77,.14),transparent 60%),var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}
+.app{display:grid;grid-template-columns:272px 1fr;min-height:100%}
+
+.sidebar{background:#0c0d12;border-right:1px solid rgba(201,162,77,.2);padding:26px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:12px;padding:0 10px 24px}
+.crest{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#14151a;display:grid;place-items:center;font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;box-shadow:0 6px 20px rgba(201,162,77,.35)}
+.brand b{display:block;font-family:"Cormorant Garamond",serif;font-size:23px;letter-spacing:.02em;color:var(--gold2)}.brand small{color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.nav-label{font-size:10px;color:rgba(243,220,155,.5);letter-spacing:.14em;text-transform:uppercase;padding:14px 12px 6px;font-weight:600}
+.tab-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;border:0;border-radius:var(--r-sm);background:transparent;color:#a9adb9;font-size:13.5px;font-weight:500;cursor:pointer;position:relative;transition:background .2s,color .2s}
+.tab-btn svg{width:19px;height:19px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab-btn:hover{background:rgba(255,255,255,.05);color:#fff}
+.tab-btn.active{background:linear-gradient(90deg,rgba(201,162,77,.22),rgba(201,162,77,.03));color:var(--gold2);font-weight:600}
+.tab-btn.active::before{content:"";position:absolute;left:-16px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--gold)}
+.tab-btn:focus-visible,.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.side-foot{margin-top:16px;padding:14px;border-radius:var(--r-sm);background:rgba(201,162,77,.08);border:1px solid rgba(201,162,77,.18);font-size:12px;color:#b9a574}
+
+.main{padding:0 40px 56px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:28px 0 24px}
+.topbar h1{font-family:"Cormorant Garamond",serif;font-size:36px;font-weight:700;line-height:1.1}
+.topbar p{color:var(--muted);font-size:13px;margin-top:3px}
+.top-actions{display:flex;gap:10px;align-items:center}
+.demo-chip{padding:6px 12px;border-radius:999px;background:rgba(251,191,36,.12);color:var(--warn);border:1px solid rgba(251,191,36,.3);font-size:12px;font-weight:700;white-space:nowrap}
+.logout-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(248,113,113,.1);color:var(--no);border:1px solid rgba(248,113,113,.25);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.logout-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.panel{display:none}.panel.active{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.panel.active{animation:none}}
+
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--r);padding:26px;margin-bottom:20px;box-shadow:0 14px 36px rgba(0,0,0,.35)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.card-title{font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:700;display:flex;align-items:center;gap:10px}
+.card-title::before{content:"";width:4px;height:20px;border-radius:4px;background:var(--gold)}
+.sub{color:var(--muted);font-size:13px;margin:-10px 0 18px 14px;max-width:680px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(166px,1fr));gap:14px;margin-bottom:20px}
+.kpi{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,#b8934a,#f0dc9c,transparent)}
+.kpi small{color:var(--muted);font-weight:600;font-size:12px}
+.kpi b{display:block;font-family:"Cormorant Garamond",serif;font-size:34px;line-height:1.15;margin-top:2px;color:var(--gold2)}
+.kpi span{font-size:12px;color:var(--muted)}
+
+label.l{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:#b6b9c4}
+input,select,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--r-sm);font-size:14px;background:#0c0e13;color:var(--ink);outline:none}
+input::placeholder,textarea::placeholder{color:#5d6272}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,162,77,.16)}
+select option{background:#12141a}
+textarea{resize:vertical}
+.fg{margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:var(--r-sm);font-size:13.5px;font-weight:700;border:0;cursor:pointer;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;box-shadow:0 8px 22px rgba(184,147,74,.3);transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-ghost{background:rgba(201,162,77,.1);color:var(--gold2);box-shadow:none;border:1px solid rgba(201,162,77,.25)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:9px;box-shadow:none}
+.btn-danger{background:rgba(248,113,113,.1);color:var(--no);border:1px solid rgba(248,113,113,.25);box-shadow:none}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 14px;font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-bottom:1.5px solid var(--line);white-space:nowrap}
+td{padding:14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}tbody tr:hover td{background:rgba(201,162,77,.04)}
+td small{color:var(--muted);display:block}
+.pill{display:inline-block;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.ok{background:rgba(52,211,153,.12);color:var(--ok)}.warn{background:rgba(251,191,36,.12);color:var(--warn)}.no{background:rgba(248,113,113,.12);color:var(--no)}.gold{background:rgba(201,162,77,.14);color:var(--gold2)}
+.bar{height:8px;border-radius:8px;background:#222632;overflow:hidden}.bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#b8934a,#f0dc9c)}
+.row2{display:grid;grid-template-columns:110px 1fr 56px;gap:12px;align-items:center;margin-bottom:12px;font-size:13px}
+.alert{display:flex;gap:10px;padding:12px 14px;border-radius:var(--r-sm);background:#181b23;border:1px solid var(--line);margin-bottom:10px;font-size:13.5px}
+.alert.w{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.07)}.alert.g{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.06)}.alert.r{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.07)}
+.empty{text-align:center;color:var(--muted);padding:30px 14px}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+.rel{border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px;margin-bottom:12px;background:#10121a}
+.rel-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.svc{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.svc:last-child{border:0}
+.svc select{width:auto;padding:8px 12px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:60;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:var(--panel);border:1px solid rgba(201,162,77,.4);border-radius:var(--r);padding:28px;max-width:440px;width:100%}
+.codebox{font-family:ui-monospace,Menlo,monospace;font-size:20px;letter-spacing:.08em;text-align:center;padding:16px;border-radius:var(--r-sm);background:#0c0e13;border:1px dashed var(--gold);color:var(--gold2);margin:16px 0}
+
+.fab{position:fixed;right:22px;bottom:calc(22px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#14151a;font-size:26px;cursor:pointer;box-shadow:0 12px 28px rgba(184,147,74,.45);z-index:40}
+.chat{display:none;position:fixed;right:22px;bottom:calc(92px + env(safe-area-inset-bottom));width:min(420px,calc(100vw - 24px));height:min(580px,74vh);background:var(--panel);border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.6);border:1px solid rgba(201,162,77,.3);z-index:41;flex-direction:column;overflow:hidden}
+.c-head{background:linear-gradient(135deg,#1c1d25,#0c0d12);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.c-head b{display:block;font-family:"Cormorant Garamond",serif;font-size:20px;color:var(--gold2)}.c-head small{color:var(--muted);font-size:11.5px}
+.c-head button{background:none;border:0;color:#fff;font-size:20px;cursor:pointer}
+#aiMsgs{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;background:#0c0e13}
+.msg{max-width:90%;padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.55}
+.msg.bot{background:#181b23;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;font-weight:600;align-self:flex-end;border-bottom-right-radius:4px}
+.sugg{padding:10px 12px;display:flex;gap:8px;overflow-x:auto;border-top:1px solid var(--line);background:var(--panel)}
+.sugg button{background:rgba(201,162,77,.1);border:1px solid rgba(201,162,77,.25);color:var(--gold2);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer}
+.c-in{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--panel)}.c-in input{flex:1}.c-in button{border:0;border-radius:12px;padding:0 18px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:sticky;height:auto;flex-direction:row;align-items:center;padding:10px 12px;gap:8px;z-index:20;overflow:visible;padding-top:max(10px,env(safe-area-inset-top));border-right:0;border-bottom:1px solid rgba(201,162,77,.2)}
+  .brand{padding:0 6px 0 0}.brand div,.nav-label,.side-foot{display:none}
+  .nav{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+  .tab-btn{width:auto;white-space:nowrap;padding:10px 14px;border-radius:999px;font-size:13px}
+  .tab-btn.active::before{display:none}.tab-btn.active{background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608}
+  .main{padding:0 16px 90px}.topbar{padding:20px 0 16px}.topbar h1{font-size:27px}
+  .card{padding:20px}.logout-btn span{display:none}.g2{grid-template-columns:1fr}
+  .chat{right:12px;bottom:calc(88px + env(safe-area-inset-bottom))}.fab{width:54px;height:54px}
+}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0c10">
+<script>/* Accès réservé + mode aperçu. Sans connexion, la page affiche un écran d'accueil avec un lien vers la connexion et un aperçu en données d'exemple (stockage en mémoire : rien de réel n'est lu ni écrit). Ce contrôle est côté navigateur : il doit être doublé par une vérification serveur. */(function(){
+var ROLE='SUPER_ADMIN',ME=["apercu", "Propriétaire"],SAMPLE={},L=location.pathname.indexOf('/pages/')>-1?'../../login.html':'login.html',BASE=location.href.split(/[?#]/)[0];
+function fixLinks(){document.querySelectorAll('a[href$="login.html"]').forEach(function(x){x.setAttribute('href',L)})}
+function ribbon(){var d=document.createElement('div');d.textContent="Aperçu · données d'exemple · rien n'est enregistré";d.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;background:#c9a24d;color:#1b1608;font:700 12px sans-serif;padding:6px 14px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap';document.body.appendChild(d)}
+function gate(){var d=document.createElement('div');d.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:100000;background:#0b0c10;color:#f1ede3;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow:auto';d.innerHTML='<div style="max-width:380px"><h1 style="font-size:28px;color:#f3dc9b;margin-bottom:10px">Accès réservé</h1><p style="color:#b9bcc8;margin-bottom:22px;line-height:1.5">Connectez-vous pour ouvrir cet espace. Ouvrez la page <b>login.html</b>, située dans le même dossier.</p><a href="'+L+'" style="display:block;padding:14px;border-radius:12px;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;font-weight:800;text-decoration:none;margin-bottom:10px">Se connecter</a><a href="'+BASE+'?apercu" style="display:block;padding:12px;border-radius:12px;border:1px solid #3a3f4d;color:#f3dc9b;text-decoration:none;font-weight:600">Voir un aperçu avec des données d\'exemple</a></div>';document.body.appendChild(d)}
+function mem(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}
+if(/[?&]apercu(=|&|$)/.test(location.search)){
+  var ls=mem(),ss=mem();
+  try{Object.defineProperty(window,'localStorage',{value:ls,configurable:true});Object.defineProperty(window,'sessionStorage',{value:ss,configurable:true})}catch(e){}
+  ls.setItem('scolaci_db_v1',JSON.stringify(SAMPLE));ss.setItem('scolaci_session',JSON.stringify({role:ROLE,id:ME[0],name:ME[1],exp:Date.now()+36e5}));
+  document.addEventListener('DOMContentLoaded',function(){fixLinks();ribbon()});return;
+}
+document.addEventListener('DOMContentLoaded',fixLinks);
+var ok=false;try{var s=JSON.parse(sessionStorage.getItem('scolaci_session')||'null');ok=!!(s&&s.role===ROLE&&s.exp>Date.now())}catch(e){}
+if(!ok){try{var r=JSON.parse(localStorage.getItem('scolaci_remember')||'null');if(r&&r.role===ROLE&&r.exp>Date.now()){location.replace(L);return}}catch(e){}document.addEventListener('DOMContentLoaded',gate)}
+})();</script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="crest">S</div><div><b>ScolACI</b><small>Tour de contrôle</small></div></div>
+    <nav class="nav">
+      <div class="nav-label">Pilotage</div>
+      <button class="tab-btn active" onclick="switchTab('dash', this)" data-title="Vue d'ensemble" data-sub="L'état du réseau ScolACI en un coup d'œil"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="9" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="12" width="8" height="9" rx="2"/><rect x="3" y="16" width="8" height="5" rx="2"/></svg>Vue d'ensemble</button>
+      <button class="tab-btn" onclick="switchTab('schools', this)" data-title="Écoles" data-sub="Inscrivez, suivez et suspendez les établissements"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-5h4v5"/></svg>Écoles</button>
+      <button class="tab-btn" onclick="switchTab('admins', this)" data-title="Administrateurs" data-sub="Comptes et codes d'accès des directeurs d'école"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>Administrateurs</button>
+      <div class="nav-label">Revenus</div>
+      <button class="tab-btn" onclick="switchTab('licenses', this)" data-title="Licences & facturation" data-sub="Abonnements, échéances et revenu mensuel"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg>Licences & facturation</button>
+      <div class="nav-label">Application</div>
+      <button class="tab-btn" onclick="switchTab('updates', this)" data-title="Mises à jour" data-sub="Versions, notes et déploiement progressif"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>Mises à jour</button>
+      <button class="tab-btn" onclick="switchTab('health', this)" data-title="Santé de l'application" data-sub="État des services et incidents"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Santé</button>
+      <button class="tab-btn" onclick="switchTab('news', this)" data-title="Annonces réseau" data-sub="Communiquez avec toutes les écoles ou un groupe"><svg viewBox="0 0 24 24"><path d="M3 11v3a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM15 9a4 4 0 010 6M18 6a8 8 0 010 12"/></svg>Annonces réseau</button>
+      <div class="nav-label">Sécurité</div>
+      <button class="tab-btn" onclick="switchTab('audit', this)" data-title="Journal & données" data-sub="Historique des actions, exports et sauvegarde"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Journal & données</button>
+    </nav>
+    <div class="side-foot">Accès réservé au propriétaire de la plateforme.</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="pageTitle">Vue d'ensemble</h1><p id="pageSub">L'état du réseau ScolACI en un coup d'œil</p></div>
+      <div class="top-actions">
+        <span class="demo-chip" id="demoChip" style="display:none">Données d'exemple</span>
+        <a href="../../login.html" onclick="scolaciLogout()" class="logout-btn"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Déconnexion</span></a>
+      </div>
+    </header>
+
+    <!-- Vue d'ensemble -->
+    <section id="panel-dash" class="panel active">
+      <div class="kpis" id="kpis"></div>
+      <div class="card"><div class="card-head"><div class="card-title">Croissance du réseau</div><span class="pill gold" id="growthTag"></span></div><div id="chart"></div></div>
+      <div class="g2">
+        <div class="card"><div class="card-title" style="margin-bottom:18px">Répartition par plan</div><div id="planBars"></div></div>
+        <div class="card"><div class="card-title" style="margin-bottom:18px">Points d'attention</div><div id="alerts"></div></div>
+      </div>
+    </section>
+
+    <!-- Écoles -->
+    <section id="panel-schools" class="panel">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:18px">Enregistrer un établissement</div>
+        <form onsubmit="addSchool(event)">
+          <div class="grid">
+            <div class="fg"><label class="l">Nom de l'établissement</label><input id="schName" placeholder="Ex: Lycée Moderne d'Abidjan" required></div>
+            <div class="fg"><label class="l">Ville / région</label><input id="schCity" placeholder="Ex: Abidjan" required></div>
+            <div class="fg"><label class="l">Type</label><select id="schType"><option>Lycée & Collège</option><option>Collège</option><option>Lycée</option><option>École primaire</option><option>Université / Grande école</option></select></div>
+            <div class="fg"><label class="l">Plan</label><select id="schPlan"><option>Standard</option><option>Premium</option><option>Enterprise</option></select></div>
+            <div class="fg"><label class="l">Mode</label><select id="schMode"><option value="trial">Essai gratuit (14 jours)</option><option value="active">Abonnement (12 mois)</option></select></div>
+          </div>
+          <button class="btn" type="submit">+ Créer l'établissement</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Établissements</div>
+          <div class="btns" style="min-width:min(100%,420px)"><input id="sSearch" placeholder="Rechercher…" oninput="renderSchools()" style="flex:1"><select id="sFilter" onchange="renderSchools()" style="width:auto"><option value="">Tous</option><option value="active">Actifs</option><option value="trial">En essai</option><option value="suspended">Suspendus</option></select></div></div>
+        <div class="table-wrap" id="schoolsTable"></div>
+      </div>
+    </section>
+
+    <!-- Administrateurs -->
+    <section id="panel-admins" class="panel">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:6px">Créer un compte administrateur</div>
+        <p class="sub">Le code d'accès est généré automatiquement et affiché une seule fois. Seuls les 3 derniers caractères sont conservés.</p>
+        <form onsubmit="addAdmin(event)">
+          <div class="grid"><div class="fg"><label class="l">Nom complet</label><input id="admName" placeholder="Ex: M. Jean Marc" required></div>
+          <div class="fg"><label class="l">Établissement</label><input id="admSchool" placeholder="Ex: Lycée Moderne d'Abidjan" autocomplete="off" required></div></div>
+          <button class="btn" type="submit">+ Créer le compte</button>
+        </form>
+      </div>
+      <div class="card"><div class="card-title" style="margin-bottom:12px">Comptes administrateurs</div><div class="table-wrap" id="adminsTable"></div></div>
+    </section>
+
+    <!-- Licences -->
+    <section id="panel-licenses" class="panel">
+      <div class="kpis" id="licKpis"></div>
+      <div class="card"><div class="card-title" style="margin-bottom:6px">Tarifs mensuels par plan (FCFA)</div><p class="sub">Montants d'exemple, à remplacer par vos vrais tarifs.</p>
+        <div class="grid" id="planPrices"></div></div>
+      <div class="card"><div class="card-title" style="margin-bottom:12px">Abonnements des écoles</div><div class="table-wrap" id="licTable"></div></div>
+    </section>
+
+    <!-- Mises à jour -->
+    <section id="panel-updates" class="panel">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:6px">Publier une version</div>
+        <p class="sub">Lancez d'abord sur peu d'écoles, puis élargissez. Vous pouvez retirer une version en cas de problème.</p>
+        <form onsubmit="addRelease(event)">
+          <div class="grid"><div class="fg"><label class="l">Numéro de version</label><input id="relV" placeholder="Ex: 1.4.0" required></div>
+          <div class="fg"><label class="l">Déploiement initial</label><select id="relPct"><option value="10">10 % des écoles</option><option value="25">25 % des écoles</option><option value="50">50 % des écoles</option><option value="100">100 % des écoles</option></select></div></div>
+          <div class="fg"><label class="l">Notes de mise à jour</label><textarea id="relNotes" rows="3" placeholder="Nouveautés, corrections…" required></textarea></div>
+          <button class="btn" type="submit">Publier la version</button>
+        </form>
+      </div>
+      <div class="card"><div class="card-head"><div class="card-title">Versions</div><span class="pill gold" id="stableTag"></span></div><div id="releases"></div>
+        <p class="note">La répartition ci-dessus est une simulation. Pour que les écoles reçoivent vraiment une version, l'application doit interroger un serveur de versions.</p></div>
+    </section>
+
+    <!-- Santé -->
+    <section id="panel-health" class="panel">
+      <div id="healthBanner"></div>
+      <div class="g2">
+        <div class="card"><div class="card-title" style="margin-bottom:10px">Services</div><div id="services"></div>
+          <p class="note">Voyants manuels. Branchez-les sur votre serveur pour un suivi automatique.</p></div>
+        <div class="card"><div class="card-title" style="margin-bottom:12px">Signaler un incident</div>
+          <form onsubmit="addIncident(event)"><div class="fg"><label class="l">Titre</label><input id="incTitle" placeholder="Ex: Lenteur sur l'envoi des notes" required></div>
+          <div class="grid"><div class="fg"><label class="l">Service</label><select id="incSvc"></select></div><div class="fg"><label class="l">Gravité</label><select id="incSev"><option>Mineure</option><option>Majeure</option><option>Critique</option></select></div></div>
+          <button class="btn" type="submit">Ouvrir l'incident</button></form></div>
+      </div>
+      <div class="card"><div class="card-title" style="margin-bottom:12px">Incidents</div><div class="table-wrap" id="incidents"></div></div>
+    </section>
+
+    <!-- Annonces -->
+    <section id="panel-news" class="panel">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:6px">Nouvelle annonce réseau</div>
+        <p class="sub">Elle apparaîtra chez les écoles ciblées une fois l'application connectée à votre serveur.</p>
+        <form onsubmit="addNews(event)">
+          <div class="grid"><div class="fg"><label class="l">Titre</label><input id="nwTitle" required placeholder="Ex: Maintenance prévue samedi"></div>
+          <div class="fg"><label class="l">Destinataires</label><select id="nwAud"><option>Toutes les écoles</option><option>Plan Premium et Enterprise</option><option>Écoles en essai</option></select></div></div>
+          <div class="fg"><label class="l">Message</label><textarea id="nwMsg" rows="4" required></textarea></div>
+          <button class="btn" type="submit">Enregistrer l'annonce</button>
+        </form>
+      </div>
+      <div class="card"><div class="card-title" style="margin-bottom:12px">Historique</div><div id="newsList"></div></div>
+    </section>
+
+    <!-- Journal -->
+    <section id="panel-audit" class="panel">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Données & sauvegarde</div></div>
+        <div class="btns"><button class="btn btn-ghost" onclick="exportJson()">Exporter tout (JSON)</button><button class="btn btn-ghost" onclick="exportLogCsv()">Exporter le journal (CSV)</button><button class="btn btn-ghost" onclick="loadDemo()">Charger les données d'exemple</button><button class="btn btn-danger" onclick="clearAll()">Tout effacer (passer en réel)</button></div>
+        <p class="note">Les données sont enregistrées dans ce navigateur. Pour un vrai suivi du réseau, elles devront venir de votre serveur.</p>
+      </div>
+      <div class="card"><div class="card-title" style="margin-bottom:12px">Journal des actions</div><div class="table-wrap" id="logTable"></div></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-ov" id="codeModal"><div class="modal-box"><div class="card-title" style="margin-bottom:6px">Code d'accès</div>
+  <p class="note" id="codeFor" style="margin:0"></p><div class="codebox" id="codeVal"></div>
+  <p class="note">Copiez-le maintenant : il ne sera plus affiché en entier.</p>
+  <div class="btns" style="margin-top:16px;justify-content:flex-end"><button class="btn btn-ghost" onclick="copyCode()">Copier</button><button class="btn" onclick="document.getElementById('codeModal').style.display='none'">Fermer</button></div></div></div>
+
+<button class="fab" onclick="toggleChat()" aria-label="Conseiller du réseau">✨</button>
+<div class="chat" id="chat">
+  <div class="c-head"><div><b>Conseiller du réseau</b><small>Questions sur vos écoles, revenus et versions</small></div><button onclick="toggleChat()" aria-label="Fermer">✕</button></div>
+  <div id="aiMsgs"><div class="msg bot">Bonjour ! Posez-moi une question sur votre réseau : écoles, revenus, licences, versions ou incidents. Tapez <strong>bilan</strong> pour un résumé.</div></div>
+  <div class="sugg"><button onclick="ask('Bilan du réseau')">Bilan</button><button onclick="ask('Licences à renouveler')">Licences</button><button onclick="ask('Revenu mensuel')">Revenu</button><button onclick="ask('Où en est la mise à jour ?')">Version</button></div>
+  <div class="c-in"><input id="aiInput" placeholder="Votre question…" onkeypress="if(event.key==='Enter')ask()"><button onclick="ask()">➔</button></div>
+</div>
+
+<script>
+// ===== Données (enregistrées dans ce navigateur ; préfixe scolaci_db_ pour survivre à la déconnexion) =====
+const KEY = 'scolaci_db_super_v1', DAY = 864e5, now = () => Date.now();
+const E = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtF = n => new Intl.NumberFormat('fr-FR').format(Math.round(n)) + ' FCFA';
+const fdate = t => new Date(t).toLocaleDateString('fr-FR');
+const ago = t => { const d = Math.floor((now() - t) / DAY); return d <= 0 ? "Aujourd'hui" : d === 1 ? 'Hier' : `Il y a ${d} j`; };
+const uid = () => now().toString(36) + Math.random().toString(36).slice(2, 6);
+const STEPS = [10, 25, 50, 100];
+function scolaciLogout() {
+  sessionStorage.removeItem('scolaci_session'); Object.keys(localStorage).filter(k => !k.startsWith('scolaci_db_')).forEach(k => localStorage.removeItem(k)); }
+
+const base = () => ({ demo: false, plans: { Standard: 25000, Premium: 60000, Enterprise: 150000 }, schools: [], admins: [], releases: [], incidents: [], news: [], log: [],
+  services: [{ n: 'API', s: 'ok' }, { n: 'Base de données', s: 'ok' }, { n: 'Stockage', s: 'ok' }, { n: 'Notifications', s: 'ok' }] });
+function seed() {
+  const S = base(), t = now(); S.demo = true;
+  [['Lycée Scientifique de Yamoussoukro', 'Yamoussoukro', 'Lycée', 'Premium', 1240, 62, 290, 'active', 120, 0],
+   ['Collège Saint-Viateur', 'Abidjan', 'Lycée & Collège', 'Standard', 860, 41, 255, 'active', 9, 1],
+   ['Groupe Scolaire Les Palmiers', 'Bouaké', 'École primaire', 'Standard', 420, 22, 210, 'active', 200, 2],
+   ['Institut Horizon', 'Abidjan', 'Université / Grande école', 'Enterprise', 2300, 95, 180, 'active', 310, 0],
+   ['Collège La Réussite', 'San-Pédro', 'Collège', 'Standard', 540, 28, 150, 'suspended', -12, 40],
+   ['Lycée Moderne des Lagunes', 'Abidjan', 'Lycée', 'Premium', 1480, 70, 120, 'active', 25, 1],
+   ['École Les Petits Génies', 'Daloa', 'École primaire', 'Standard', 310, 15, 90, 'trial', 6, 0],
+   ['Complexe Scolaire Excellence', 'Korhogo', 'Lycée & Collège', 'Premium', 720, 36, 60, 'active', 330, 3],
+   ['Collège Sainte-Marie', 'Man', 'Collège', 'Standard', 380, 19, 35, 'trial', 9, 20]
+  ].forEach((r, i) => S.schools.push({ id: 's' + (i + 1), name: r[0], city: r[1], type: r[2], plan: r[3], students: r[4], teachers: r[5], created: t - r[6] * DAY, status: r[7], exp: t + r[8] * DAY, last: t - r[9] * DAY }));
+  S.admins = [{ id: 'a1', name: 'M. Jean Marc', school: 's1', hint: '7QK', ok: true, created: t - 280 * DAY }, { id: 'a2', name: 'Mme Awa Traoré', school: 's2', hint: 'M4P', ok: true, created: t - 250 * DAY }, { id: 'a3', name: 'M. Koffi Kouadio', school: 's4', hint: 'X9C', ok: true, created: t - 170 * DAY }];
+  S.releases = [{ id: 'r1', v: '1.2.0', notes: 'Emplois du temps partagés et scolarité par niveau et par classe.', date: t - 14 * DAY, pct: 100, on: true }, { id: 'r2', v: '1.3.0', notes: 'Espace professeur, appel par cours et tuteur IA pour les élèves.', date: t - 2 * DAY, pct: 25, on: true }];
+  S.incidents = [{ id: 'i1', title: "Lenteur de l'envoi des notes", svc: 'API', sev: 'Mineure', open: false, date: t - 6 * DAY, closed: t - 6 * DAY + 3 * 36e5 }];
+  S.news = [{ id: 'n1', title: 'Bienvenue sur ScolACI', msg: 'Merci de votre confiance. Pensez à inscrire vos classes avant la rentrée.', aud: 'Toutes les écoles', date: t - 20 * DAY }];
+  S.log = [{ t: t, who: 'Système', action: "Données d'exemple chargées", detail: 'Remplacez-les par vos vraies écoles.' }];
+  return S;
+}
+let S;
+function load() { try { S = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (e) { S = seed(); } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { alert('Enregistrement impossible : ' + e.message); } }
+function log(action, detail) { S.log.unshift({ t: now(), who: 'Super Admin', action, detail: detail || '' }); S.log = S.log.slice(0, 300); }
+const done = () => { save(); renderAll(); };
+
+// ===== Calculs =====
+const schoolName = id => (S.schools.find(s => s.id === id) || { name: '—' }).name;
+const adminSchool = a => a.school && S.schools.some(s => s.id === a.school) ? schoolName(a.school) : (a.schoolText || '—');
+function licStatus(s) {
+  if (s.status === 'suspended') return ['Suspendue', 'no'];
+  const d = (s.exp - now()) / DAY;
+  if (s.status === 'trial') return d < 0 ? ['Essai terminé', 'no'] : [`Essai · ${Math.ceil(d)} j`, 'gold'];
+  return d < 0 ? ['Expirée', 'no'] : d < 30 ? ['Renouvellement proche', 'warn'] : ['À jour', 'ok'];
+}
+const payers = () => S.schools.filter(s => s.status === 'active');
+const mrr = () => payers().reduce((t, s) => t + (S.plans[s.plan] || 0), 0);
+function versionOf(i, n) {
+  const rel = S.releases.filter(r => r.on).sort((a, b) => b.date - a.date);
+  for (const r of rel) if (i < Math.ceil(n * r.pct / 100)) return r.v;
+  return rel.length ? rel[rel.length - 1].v : '—';
+}
+const stable = () => { const r = S.releases.filter(r => r.on && r.pct === 100).sort((a, b) => b.date - a.date)[0]; return r ? r.v : '—'; };
+
+// ===== Rendu =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active'); document.getElementById('panel-' + id).classList.add('active');
+  document.getElementById('pageTitle').textContent = btn.dataset.title; document.getElementById('pageSub').textContent = btn.dataset.sub;
+  btn.scrollIntoView({ block: 'nearest', inline: 'center' }); window.scrollTo({ top: 0 });
+}
+const kpi = (l, v, s) => `<div class="kpi"><small>${l}</small><b>${v}</b><span>${s || '&nbsp;'}</span></div>`;
+
+function growthChart() {
+  const n = 12, d = new Date(), months = [];
+  for (let i = n - 1; i >= 0; i--) { const m = new Date(d.getFullYear(), d.getMonth() - i, 1); months.push(m); }
+  const nu = months.map(m => S.schools.filter(s => { const c = new Date(s.created); return c.getFullYear() === m.getFullYear() && c.getMonth() === m.getMonth(); }).length);
+  let run = S.schools.filter(s => new Date(s.created) < months[0]).length; const cum = nu.map(v => run += v);
+  const W = 640, H = 240, L = 34, B = 34, T = 14, max = Math.max(1, ...cum), iw = (W - L - 10) / n, y = v => T + (H - T - B) * (1 - v / max);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Croissance du nombre d'écoles sur 12 mois">`;
+  [0, .5, 1].forEach(f => { const v = Math.round(max * f); svg += `<line x1="${L}" x2="${W - 6}" y1="${y(v)}" y2="${y(v)}" stroke="#262a36"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#8d92a0">${v}</text>`; });
+  nu.forEach((v, i) => { const x = L + i * iw + iw * .2; svg += `<rect x="${x}" y="${y(v)}" width="${iw * .6}" height="${H - B - y(v)}" rx="4" fill="rgba(201,162,77,.35)"/>`; });
+  svg += `<polyline fill="none" stroke="#f3dc9b" stroke-width="2.5" stroke-linejoin="round" points="${cum.map((v, i) => `${L + i * iw + iw / 2},${y(v)}`).join(' ')}"/>`;
+  cum.forEach((v, i) => svg += `<circle cx="${L + i * iw + iw / 2}" cy="${y(v)}" r="3.5" fill="#c9a24d"/>`);
+  months.forEach((m, i) => svg += `<text x="${L + i * iw + iw / 2}" y="${H - 12}" text-anchor="middle" font-size="11" fill="#8d92a0">${m.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '')}</text>`);
+  document.getElementById('growthTag').textContent = `+${nu[n - 1]} ce mois · ${cum[n - 1]} au total`;
+  return svg + '</svg>';
+}
+function renderDash() {
+  const st = S.schools.reduce((t, s) => t + s.students, 0), te = S.schools.reduce((t, s) => t + s.teachers, 0), openInc = S.incidents.filter(i => i.open).length;
+  document.getElementById('kpis').innerHTML = kpi('Écoles', S.schools.length, `${payers().length} payantes · ${S.schools.filter(s => s.status === 'trial').length} en essai`) + kpi('Élèves', new Intl.NumberFormat('fr-FR').format(st), 'sur tout le réseau') +
+    kpi('Professeurs', te, 'comptes enseignants') + kpi('Revenu mensuel', fmtF(mrr()), 'abonnements actifs') + kpi('Version stable', stable(), openInc ? `${openInc} incident(s) ouvert(s)` : 'Aucun incident');
+  document.getElementById('chart').innerHTML = S.schools.length ? growthChart() : '<p class="empty">Aucune école enregistrée pour le moment.</p>';
+  const max = Math.max(1, ...Object.keys(S.plans).map(p => S.schools.filter(s => s.plan === p).length));
+  document.getElementById('planBars').innerHTML = Object.keys(S.plans).map(p => { const c = S.schools.filter(s => s.plan === p).length; return `<div class="row2"><b>${p}</b><div class="bar"><i style="width:${c / max * 100}%"></i></div><span>${c}</span></div>`; }).join('');
+  const al = [], soon = S.schools.filter(s => s.status === 'active' && (s.exp - now()) / DAY < 30);
+  if (soon.length) al.push(['w', `🔑 ${soon.length} licence(s) à renouveler sous 30 jours.`]);
+  const tr = S.schools.filter(s => s.status === 'trial' && (s.exp - now()) / DAY < 10); if (tr.length) al.push(['w', `⏳ ${tr.length} essai(s) se terminent bientôt : relancez-les.`]);
+  const sus = S.schools.filter(s => s.status === 'suspended').length; if (sus) al.push(['r', `⛔ ${sus} école(s) suspendue(s).`]);
+  const idle = S.schools.filter(s => s.status !== 'suspended' && (now() - s.last) / DAY > 14).length; if (idle) al.push(['w', `😴 ${idle} école(s) inactive(s) depuis plus de 14 jours.`]);
+  if (openInc) al.push(['r', `🚨 ${openInc} incident(s) ouvert(s).`]);
+  if (!al.length) al.push(['g', '✅ Rien à signaler.']);
+  document.getElementById('alerts').innerHTML = al.map(a => `<div class="alert ${a[0]}">${a[1]}</div>`).join('');
+}
+function renderSchools() {
+  const q = document.getElementById('sSearch').value.trim().toLowerCase(), f = document.getElementById('sFilter').value;
+  const list = S.schools.map((s, i) => ({ ...s, i })).filter(s => (!f || s.status === f) && (!q || (s.name + ' ' + s.city).toLowerCase().includes(q)));
+  document.getElementById('schoolsTable').innerHTML = list.length ? `<table><thead><tr><th>Établissement</th><th>Type</th><th>Plan</th><th>Élèves</th><th>Version</th><th>Statut</th><th>Activité</th><th></th></tr></thead><tbody>` + list.map(s => {
+    const ls = licStatus(s);
+    return `<tr><td><strong>${E(s.name)}</strong><small>${E(s.city)}</small></td><td>${E(s.type)}</td><td><span class="pill gold">${E(s.plan)}</span></td><td>${s.students}</td><td>${E(versionOf(s.i, S.schools.length))}</td><td><span class="pill ${ls[1]}">${ls[0]}</span></td><td>${ago(s.last)}</td>
+      <td><div class="btns"><button class="btn btn-sm ${s.status === 'suspended' ? 'btn-ghost' : 'btn-danger'}" onclick="toggleSchool('${s.id}')">${s.status === 'suspended' ? 'Réactiver' : 'Suspendre'}</button><button class="btn btn-sm btn-danger" onclick="delSchool('${s.id}')">Supprimer</button></div></td></tr>`;
+  }).join('') + '</tbody></table>' : '<p class="empty">Aucune école ne correspond.</p>';
+}
+function renderAdmins() {
+  document.getElementById('adminsTable').innerHTML = S.admins.length ? `<table><thead><tr><th>Nom</th><th>Établissement</th><th>Code</th><th>Statut</th><th></th></tr></thead><tbody>` + S.admins.map(a =>
+    `<tr><td><strong>${E(a.name)}</strong><small>Créé le ${fdate(a.created)}</small></td><td>${E(adminSchool(a))}</td><td><code>••••••${E(a.hint)}</code></td><td><span class="pill ${a.ok ? 'ok' : 'no'}">${a.ok ? 'Actif' : 'Révoqué'}</span></td>
+    <td><div class="btns"><button class="btn btn-sm btn-ghost" onclick="resetCode('${a.id}')">Nouveau code</button><button class="btn btn-sm ${a.ok ? 'btn-danger' : 'btn-ghost'}" onclick="toggleAdmin('${a.id}')">${a.ok ? 'Révoquer' : 'Réactiver'}</button></div></td></tr>`).join('') + '</tbody></table>' : '<p class="empty">Aucun compte administrateur.</p>';
+}
+function renderLicenses() {
+  const soon = S.schools.filter(s => s.status === 'active' && (s.exp - now()) / DAY < 30).length;
+  document.getElementById('licKpis').innerHTML = kpi('Revenu mensuel', fmtF(mrr()), 'abonnements actifs') + kpi('Revenu annuel estimé', fmtF(mrr() * 12), 'si aucun départ') + kpi('À renouveler (30 j)', soon, 'licences') + kpi('En essai', S.schools.filter(s => s.status === 'trial').length, 'à convertir');
+  document.getElementById('planPrices').innerHTML = Object.keys(S.plans).map(p => `<div class="fg"><label class="l">${p}</label><input type="number" min="0" value="${S.plans[p]}" onchange="setPrice('${p}',this.value)"></div>`).join('');
+  document.getElementById('licTable').innerHTML = S.schools.length ? `<table><thead><tr><th>Établissement</th><th>Plan</th><th>Tarif / mois</th><th>Échéance</th><th>Statut</th><th></th></tr></thead><tbody>` + S.schools.map(s => {
+    const ls = licStatus(s);
+    return `<tr><td><strong>${E(s.name)}</strong></td><td>${E(s.plan)}</td><td>${fmtF(S.plans[s.plan] || 0)}</td><td>${fdate(s.exp)}</td><td><span class="pill ${ls[1]}">${ls[0]}</span></td>
+      <td><div class="btns"><button class="btn btn-sm" onclick="renew('${s.id}')">${s.status === 'trial' ? 'Activer 12 mois' : 'Renouveler +12 mois'}</button><button class="btn btn-sm btn-ghost" onclick="reminder('${s.id}')">Rappel</button></div></td></tr>`;
+  }).join('') + '</tbody></table>' : '<p class="empty">Aucune école.</p>';
+}
+function renderUpdates() {
+  document.getElementById('stableTag').textContent = 'Version stable : ' + stable();
+  const n = S.schools.length, rel = S.releases.slice().sort((a, b) => b.date - a.date);
+  document.getElementById('releases').innerHTML = rel.length ? rel.map(r => {
+    const cov = r.on ? Math.ceil(n * r.pct / 100) : 0, next = STEPS.find(x => x > r.pct);
+    return `<div class="rel"><div class="rel-top"><div><strong style="font-size:16px">v${E(r.v)}</strong> <span class="pill ${r.on ? (r.pct === 100 ? 'ok' : 'gold') : 'no'}">${r.on ? (r.pct === 100 ? 'Déployée' : 'Déploiement progressif') : 'Retirée'}</span></div><small style="color:var(--muted)">${fdate(r.date)}</small></div>
+      <p style="margin-bottom:10px;color:#cfd2db">${E(r.notes)}</p><div class="row2" style="grid-template-columns:1fr 150px;margin-bottom:10px"><div class="bar"><i style="width:${r.on ? r.pct : 0}%"></i></div><span>${r.on ? r.pct : 0} % · ${cov}/${n} écoles</span></div>
+      <div class="btns">${r.on && next ? `<button class="btn btn-sm" onclick="widen('${r.id}')">Étendre à ${next} %</button>` : ''}${r.on ? `<button class="btn btn-sm btn-danger" onclick="withdraw('${r.id}')">Retirer</button>` : ''}</div></div>`;
+  }).join('') : '<p class="empty">Aucune version publiée.</p>';
+}
+const SC = { ok: ['Opérationnel', '#34d399'], deg: ['Dégradé', '#fbbf24'], down: ['Panne', '#f87171'] };
+function renderHealth() {
+  const worst = S.services.some(x => x.s === 'down') ? 'down' : S.services.some(x => x.s === 'deg') ? 'deg' : 'ok';
+  document.getElementById('healthBanner').innerHTML = `<div class="alert ${worst === 'ok' ? 'g' : worst === 'deg' ? 'w' : 'r'}" style="font-size:15px;font-weight:600">${worst === 'ok' ? '✅ Tous les services fonctionnent normalement.' : worst === 'deg' ? '⚠️ Certains services sont dégradés.' : '🚨 Un service est en panne.'}</div>`;
+  document.getElementById('services').innerHTML = S.services.map((x, i) => `<div class="svc"><span><span class="dot" style="background:${SC[x.s][1]}"></span>${E(x.n)}</span><select onchange="setSvc(${i},this.value)">${Object.keys(SC).map(k => `<option value="${k}" ${x.s === k ? 'selected' : ''}>${SC[k][0]}</option>`).join('')}</select></div>`).join('');
+  document.getElementById('incSvc').innerHTML = S.services.map(x => `<option>${E(x.n)}</option>`).join('');
+  document.getElementById('incidents').innerHTML = S.incidents.length ? `<table><thead><tr><th>Incident</th><th>Service</th><th>Gravité</th><th>Ouvert le</th><th>État</th><th></th></tr></thead><tbody>` + S.incidents.map(i =>
+    `<tr><td><strong>${E(i.title)}</strong></td><td>${E(i.svc)}</td><td><span class="pill ${i.sev === 'Mineure' ? 'gold' : i.sev === 'Majeure' ? 'warn' : 'no'}">${i.sev}</span></td><td>${fdate(i.date)}</td><td><span class="pill ${i.open ? 'no' : 'ok'}">${i.open ? 'Ouvert' : 'Résolu'}</span></td><td>${i.open ? `<button class="btn btn-sm" onclick="resolveInc('${i.id}')">Résoudre</button>` : ''}</td></tr>`).join('') + '</tbody></table>' : '<p class="empty">Aucun incident.</p>';
+}
+function renderNews() {
+  document.getElementById('newsList').innerHTML = S.news.length ? S.news.map(n => `<div class="rel"><div class="rel-top"><strong>${E(n.title)}</strong><span class="pill gold">${E(n.aud)}</span></div><p style="color:#cfd2db;white-space:pre-line">${E(n.msg)}</p><small style="color:var(--muted)">${fdate(n.date)}</small></div>`).join('') : '<p class="empty">Aucune annonce.</p>';
+}
+function renderAudit() {
+  document.getElementById('logTable').innerHTML = S.log.length ? `<table><thead><tr><th>Date</th><th>Auteur</th><th>Action</th><th>Détail</th></tr></thead><tbody>` + S.log.slice(0, 100).map(l =>
+    `<tr><td style="white-space:nowrap">${new Date(l.t).toLocaleString('fr-FR')}</td><td>${E(l.who)}</td><td><strong>${E(l.action)}</strong></td><td>${E(l.detail)}</td></tr>`).join('') + '</tbody></table>' : '<p class="empty">Journal vide.</p>';
+}
+function renderAll() {
+  document.getElementById('demoChip').style.display = S.demo ? '' : 'none';
+  renderDash(); renderSchools(); renderAdmins(); renderLicenses(); renderUpdates(); renderHealth(); renderNews(); renderAudit();
+}
+
+// ===== Actions =====
+function addSchool(e) {
+  e.preventDefault(); const trial = document.getElementById('schMode').value === 'trial', t = now();
+  const s = { id: uid(), name: document.getElementById('schName').value.trim(), city: document.getElementById('schCity').value.trim(), type: document.getElementById('schType').value, plan: document.getElementById('schPlan').value, students: 0, teachers: 0, created: t, status: trial ? 'trial' : 'active', exp: t + (trial ? 14 : 365) * DAY, last: t };
+  S.schools.push(s); log('École créée', `${s.name} (${s.plan}, ${trial ? 'essai' : 'abonnement'})`); e.target.reset(); done();
+}
+function toggleSchool(id) { const s = S.schools.find(x => x.id === id); if (s.status === 'suspended') { s.status = 'active'; log('École réactivée', s.name); } else { if (!confirm(`Suspendre ${s.name} ? Ses utilisateurs perdront l'accès.`)) return; s.status = 'suspended'; log('École suspendue', s.name); } done(); }
+function delSchool(id) { const s = S.schools.find(x => x.id === id); if (!confirm(`Supprimer définitivement ${s.name} ?`)) return; S.schools = S.schools.filter(x => x.id !== id); S.admins = S.admins.filter(a => a.school !== id); log('École supprimée', s.name); done(); }
+const hexOf = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+const rndHex = () => hexOf(crypto.getRandomValues(new Uint8Array(16)));
+const shaHex = async t => hexOf(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)));
+function genCode() { const al = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', b = crypto.getRandomValues(new Uint8Array(8)); return 'ADM-' + [...b].map(x => al[x % al.length]).join(''); }
+function showCode(who, code) { document.getElementById('codeFor').textContent = who; document.getElementById('codeVal').textContent = code; document.getElementById('codeModal').style.display = 'flex'; }
+function copyCode() { const c = document.getElementById('codeVal').textContent; if (navigator.clipboard) navigator.clipboard.writeText(c).then(() => alert('Code copié.')); }
+async function addAdmin(e) {
+  e.preventDefault(); const typed = document.getElementById('admSchool').value.trim(), match = S.schools.find(x => x.name.toLowerCase() === typed.toLowerCase());
+  const code = genCode(), a = { id: uid(), name: document.getElementById('admName').value.trim(), school: match ? match.id : '', schoolText: match ? match.name : typed, hint: code.slice(-3), ok: true, created: now() };
+  a.salt = rndHex(); a.codeHash = await shaHex(a.salt + code); a.pw = null;
+  S.admins.push(a); log('Administrateur créé', `${a.name} — ${a.schoolText}`); e.target.reset(); done(); showCode(`${a.name} · ${a.schoolText}`, code);
+}
+async function resetCode(id) { const a = S.admins.find(x => x.id === id), code = genCode(); a.hint = code.slice(-3); a.salt = rndHex(); a.codeHash = await shaHex(a.salt + code); a.pw = null; log('Code réinitialisé', a.name); done(); showCode(`${a.name} · ${adminSchool(a)}`, code); }
+function toggleAdmin(id) { const a = S.admins.find(x => x.id === id); a.ok = !a.ok; log(a.ok ? 'Administrateur réactivé' : 'Administrateur révoqué', a.name); done(); }
+function setPrice(p, v) { S.plans[p] = Math.max(0, +v || 0); log('Tarif modifié', `${p} : ${fmtF(S.plans[p])}`); done(); }
+function renew(id) { const s = S.schools.find(x => x.id === id); s.exp = Math.max(s.exp, now()) + 365 * DAY; if (s.status === 'trial') s.status = 'active'; log('Licence renouvelée', `${s.name} jusqu'au ${fdate(s.exp)}`); done(); }
+function reminder(id) { const s = S.schools.find(x => x.id === id), m = `Bonjour, la licence ScolACI de ${s.name} arrive à échéance le ${fdate(s.exp)}. Merci de procéder au renouvellement pour garder l'accès.`; if (navigator.clipboard) navigator.clipboard.writeText(m); log('Rappel préparé', s.name); alert('Message de rappel copié, prêt à envoyer :\n\n' + m); save(); renderAudit(); }
+function addRelease(e) { e.preventDefault(); const r = { id: uid(), v: document.getElementById('relV').value.trim().replace(/^v/i, ''), notes: document.getElementById('relNotes').value.trim(), date: now(), pct: +document.getElementById('relPct').value, on: true }; S.releases.push(r); log('Version publiée', `v${r.v} à ${r.pct} %`); e.target.reset(); done(); }
+function widen(id) { const r = S.releases.find(x => x.id === id); r.pct = STEPS.find(x => x > r.pct) || 100; log('Déploiement étendu', `v${r.v} à ${r.pct} %`); done(); }
+function withdraw(id) { const r = S.releases.find(x => x.id === id); if (!confirm(`Retirer la version ${r.v} ?`)) return; r.on = false; log('Version retirée', 'v' + r.v); done(); }
+function setSvc(i, v) { S.services[i].s = v; log('État du service modifié', `${S.services[i].n} : ${SC[v][0]}`); done(); }
+function addIncident(e) { e.preventDefault(); const i = { id: uid(), title: document.getElementById('incTitle').value.trim(), svc: document.getElementById('incSvc').value, sev: document.getElementById('incSev').value, open: true, date: now() }; S.incidents.unshift(i); log('Incident ouvert', `${i.title} (${i.sev})`); e.target.reset(); done(); }
+function resolveInc(id) { const i = S.incidents.find(x => x.id === id); i.open = false; i.closed = now(); log('Incident résolu', i.title); done(); }
+function addNews(e) { e.preventDefault(); const n = { id: uid(), title: document.getElementById('nwTitle').value.trim(), msg: document.getElementById('nwMsg').value.trim(), aud: document.getElementById('nwAud').value, date: now() }; S.news.unshift(n); log('Annonce créée', `${n.title} → ${n.aud}`); e.target.reset(); done(); }
+function download(name, text, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); }
+function exportJson() { download('scolaci-reseau.json', JSON.stringify(S, null, 2), 'application/json'); }
+function exportLogCsv() { download('journal-scolaci.csv', '\ufeff' + [['Date', 'Auteur', 'Action', 'Détail']].concat(S.log.map(l => [new Date(l.t).toLocaleString('fr-FR'), l.who, l.action, l.detail])).map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\n'), 'text/csv'); }
+function loadDemo() { if (!confirm("Remplacer toutes les données par les données d'exemple ?")) return; S = seed(); done(); }
+function clearAll() { if (!confirm('Effacer toutes les écoles, comptes, versions et journaux ?')) return; const plans = S.plans; S = base(); S.plans = plans; log('Données effacées', 'Passage en données réelles'); done(); }
+
+// ===== Conseiller du réseau =====
+// Vide = conseiller local gratuit. Pour Claude : 'https://votre-serveur/api/chat' (voir proxy-claude.js). Seuls des totaux sont envoyés.
+const AI_ENDPOINT = '', aiHistory = [];
+function toggleChat() { const c = document.getElementById('chat'); c.style.display = c.style.display === 'flex' ? 'none' : 'flex'; }
+const mdLite = s => E(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/^[-*] /gm, '• ').replace(/\n/g, '<br>');
+function summary() { return JSON.stringify({ ecoles: S.schools.length, payantes: payers().length, essais: S.schools.filter(s => s.status === 'trial').length, suspendues: S.schools.filter(s => s.status === 'suspended').length, eleves: S.schools.reduce((t, s) => t + s.students, 0), revenu_mensuel_fcfa: mrr(), version_stable: stable(), incidents_ouverts: S.incidents.filter(i => i.open).length, plans: Object.fromEntries(Object.keys(S.plans).map(p => [p, S.schools.filter(s => s.plan === p).length])) }); }
+function localAdvisor(msg) {
+  const q = msg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''), soon = S.schools.filter(s => s.status === 'active' && (s.exp - now()) / DAY < 30);
+  if (/licence|renouvel|echeance|expire/.test(q)) return soon.length ? `**${soon.length} licence(s) à renouveler sous 30 jours :**\n` + soon.map(s => `- ${s.name} : ${fdate(s.exp)}`).join('\n') : 'Aucune licence à renouveler dans les 30 prochains jours.';
+  if (/revenu|mrr|chiffre|argent|paiement/.test(q)) return `**Revenu mensuel : ${fmtF(mrr())}** (estimation annuelle : ${fmtF(mrr() * 12)}).\n` + Object.keys(S.plans).map(p => `- ${p} : ${S.schools.filter(s => s.status === 'active' && s.plan === p).length} école(s) × ${fmtF(S.plans[p])}`).join('\n');
+  if (/version|mise a jour|deploi|update/.test(q)) { const r = S.releases.filter(x => x.on).sort((a, b) => b.date - a.date)[0]; return r ? `Dernière version : **v${r.v}**, déployée à **${r.pct} %** (${Math.ceil(S.schools.length * r.pct / 100)}/${S.schools.length} écoles). Version stable : **${stable()}**.` : "Aucune version n'est publiée."; }
+  if (/incident|panne|sante|probleme|service/.test(q)) { const o = S.incidents.filter(i => i.open); return o.length ? `**${o.length} incident(s) ouvert(s) :**\n` + o.map(i => `- ${i.title} (${i.sev}, ${i.svc})`).join('\n') : 'Aucun incident ouvert. ' + (S.services.every(x => x.s === 'ok') ? 'Tous les services sont opérationnels.' : 'Certains services ne sont pas au vert, voir l\'onglet Santé.'); }
+  if (/inactif|inactive|activite/.test(q)) { const l = S.schools.filter(s => s.status !== 'suspended' && (now() - s.last) / DAY > 14); return l.length ? `**Écoles inactives (+14 jours) :**\n` + l.map(s => `- ${s.name} : ${ago(s.last)}`).join('\n') : 'Toutes les écoles ont été actives ces 14 derniers jours.'; }
+  if (/eleve|effectif/.test(q)) { const top = S.schools.slice().sort((a, b) => b.students - a.students).slice(0, 3); return `**${new Intl.NumberFormat('fr-FR').format(S.schools.reduce((t, s) => t + s.students, 0))} élèves** sur le réseau.\n` + top.map(s => `- ${s.name} : ${s.students}`).join('\n'); }
+  if (/croissance|progress|evolution|nouvelle/.test(q)) { const m = S.schools.filter(s => now() - s.created < 30 * DAY).length; return `**${m} nouvelle(s) école(s)** ces 30 derniers jours, **${S.schools.length}** au total.`; }
+  if (/bilan|resume|situation|point|ecole|reseau/.test(q) || !q.trim()) return `**Bilan du réseau**\n- ${S.schools.length} écoles : ${payers().length} payantes, ${S.schools.filter(s => s.status === 'trial').length} en essai, ${S.schools.filter(s => s.status === 'suspended').length} suspendue(s)\n- Revenu mensuel : ${fmtF(mrr())}\n- Licences à renouveler (30 j) : ${soon.length}\n- Version stable : ${stable()}\n- Incidents ouverts : ${S.incidents.filter(i => i.open).length}` + (S.demo ? '\n\n(Données d\'exemple)' : '');
+  return "Je peux répondre sur : **bilan**, **revenu**, **licences**, **versions**, **incidents**, **élèves**, **inactives** et **croissance**.";
+}
+async function ask(text) {
+  const input = document.getElementById('aiInput'), box = document.getElementById('aiMsgs'), msg = (text || input.value).trim(); if (!msg) return; input.value = '';
+  box.insertAdjacentHTML('beforeend', `<div class="msg user">${E(msg)}</div>`);
+  const bot = document.createElement('div'); bot.className = 'msg bot'; bot.style.opacity = '.6'; bot.textContent = 'Analyse…'; box.appendChild(bot); box.scrollTop = box.scrollHeight;
+  aiHistory.push({ role: 'user', content: msg }); let ans;
+  try {
+    if (!AI_ENDPOINT) throw new Error('local');
+    const r = await fetch(AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: 'superadmin', messages: aiHistory.slice(-16), context: summary() }) });
+    const j = await r.json(); if (!r.ok || j.error) throw new Error(j.error || 'HTTP ' + r.status); ans = j.text; aiHistory.push({ role: 'assistant', content: ans });
+  } catch (e) { aiHistory.pop(); ans = localAdvisor(msg); }
+  bot.innerHTML = mdLite(ans); bot.style.opacity = ''; box.scrollTop = box.scrollHeight;
+}
+
+window.addEventListener('storage', e => { if (e.key === KEY) { load(); renderAll(); } });
+load(); renderAll();
+</script>
+</body>
+</html>

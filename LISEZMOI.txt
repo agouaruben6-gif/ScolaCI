@@ -1,0 +1,39 @@
+ScolACI — mode d'emploi rapide
+================================
+
+1) Décompressez ce dossier. Gardez tous les fichiers ensemble, dans le même dossier.
+
+2) Double-cliquez sur  index.html  (page d'accueil)  ou sur  login.html  (connexion).
+   N'ouvrez pas directement les pages d'espace (admin, prof, eleve, superadmin) :
+   elles demandent d'abord une connexion.
+
+3) Pour voir tout de suite le visuel :
+   sur la page login.html, en bas, cliquez sur un lien « Aperçus avec données d'exemple ».
+   Rien de réel n'est lu ni enregistré dans ce mode.
+
+4) Premier vrai test :
+   - login.html > « Accès propriétaire » : créez votre identifiant et un mot de passe (10 caractères minimum).
+   - Dans la tour de contrôle : créez une école, puis un compte administrateur. Un code d'accès s'affiche UNE seule fois.
+   - login.html > « Administration » : entrez le code, choisissez un mot de passe.
+   - Dans la page admin : créez des classes, des élèves et des professeurs.
+   - Connectez-vous ensuite comme professeur (par son nom) et comme élève (par son matricule).
+
+5) « Rester connecté sur cet appareil » (page de connexion) :
+   - Une fois connecté avec la case cochée, l'appli ouvre directement l'espace de la personne, sans reconnexion.
+   - Case cochée d'office sur téléphone et tablette ; décochée sur ordinateur et pour le propriétaire.
+   - Durées : élève et enseignant 30 jours, administration 14 jours, propriétaire 7 jours (prolongées à chaque utilisation).
+   - Le bouton « Déconnexion » efface la mémorisation. À éviter sur un appareil partagé.
+
+6) Installer comme une application et utiliser sans internet :
+   - Nécessite que le site soit en ligne en https:// (ou ouvert sur localhost). Ne marche pas en double-clic sur un fichier.
+   - Téléphone : ouvrir le site > menu du navigateur > « Ajouter à l'écran d'accueil » / « Installer l'application ».
+   - Les pages déjà visitées s'ouvrent ensuite sans internet.
+   - Si vous modifiez les fichiers, changez le numéro de version dans sw.js (ligne : const V = 'scolaci-v1').
+
+7) Navigateur : Chrome ou Edge en double-clic fonctionne pour tester. Avec Firefox ou Safari, utilisez l'extension
+   « Live Server » de VS Code (ou un petit serveur local).
+
+8) Limites actuelles : tout est vérifié dans le navigateur, sur un seul appareil. Pour de vraies écoles sur
+   plusieurs téléphones, il faudra un serveur et une base de données.
+
+Le dossier « serveur-ia-optionnel » ne sert que si vous activez l'IA Claude plus tard (clé API nécessaire).

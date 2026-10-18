@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Administration — ScolACI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f5f3; --surface:#fff; --ink:#14211c; --muted:#6b7a73; --line:#e3e9e5;
+  --green:#0f6b4f; --green-deep:#0a3f2f; --green-soft:#e4f3ec;
+  --orange:#f08a24; --orange-soft:#fff1e0;
+  --danger:#d93a2f; --danger-soft:#fdeceb; --ok:#1f9d63;
+  --r:18px; --r-sm:12px;
+  --shadow:0 1px 2px rgba(10,63,47,.05),0 8px 24px rgba(10,63,47,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}
+
+/* ===== Structure ===== */
+.app{display:grid;grid-template-columns:272px 1fr;min-height:100%}
+
+/* ===== Sidebar ===== */
+.sidebar{background:linear-gradient(180deg,var(--green-deep),#072a1f);color:#fff;padding:28px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:12px;padding:0 10px 28px}
+.brand-mark{width:42px;height:42px;border-radius:13px;background:var(--orange);display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;box-shadow:0 6px 16px rgba(240,138,36,.4)}
+.brand b{display:block;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.brand small{color:rgba(255,255,255,.55);font-size:11px}
+.nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.nav-label{font-size:11px;color:rgba(255,255,255,.4);padding:14px 12px 6px;font-weight:600}
+.tab-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;border:0;border-radius:var(--r-sm);background:transparent;color:rgba(255,255,255,.72);font-size:13.5px;font-weight:500;cursor:pointer;position:relative;transition:background .2s,color .2s}
+.tab-btn svg{width:19px;height:19px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab-btn:hover{background:rgba(255,255,255,.07);color:#fff}
+.tab-btn.active{background:rgba(255,255,255,.12);color:#fff;font-weight:600}
+.tab-btn.active::before{content:"";position:absolute;left:-18px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--orange)}
+.tab-btn:focus-visible,.btn:focus-visible,.logout-btn:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.side-foot{margin-top:18px;padding:14px;border-radius:var(--r-sm);background:rgba(255,255,255,.06);font-size:12px;color:rgba(255,255,255,.6)}
+
+/* ===== Contenu ===== */
+.main{padding:0 40px 48px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:28px 40px 26px;margin:0 -40px;position:sticky;top:0;background:linear-gradient(var(--bg) 78%,transparent);z-index:5}
+.topbar h1{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.topbar p{color:var(--muted);font-size:13px;margin-top:2px}
+.logout-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:var(--surface);color:var(--danger);border:1px solid var(--line);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap;transition:all .2s;box-shadow:var(--shadow)}
+.logout-btn:hover{background:var(--danger-soft);border-color:rgba(217,58,47,.25)}
+
+.panel{display:none}
+.panel.active{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.panel.active{animation:none}}
+
+/* ===== Cartes ===== */
+.card{background:var(--surface);border-radius:var(--r);padding:28px;margin-bottom:22px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.card-title{font-size:17px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.card-title::before{content:"";width:4px;height:18px;border-radius:4px;background:var(--orange)}
+.card-sub{color:var(--muted);font-size:13px;margin:0 0 22px 14px;max-width:640px}
+.card-title + form,.card-title + .grid-2,.card-title + .form-group,.card-title + table{margin-top:22px}
+.inset{background:#f8faf9;border:1px solid var(--line);border-radius:var(--r-sm);padding:22px}
+.inset h3{font-size:15px;font-weight:700;margin-bottom:14px}
+
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+
+/* ===== Formulaires ===== */
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:12.5px;font-weight:600;margin-bottom:7px;color:#3b4a43}
+input,select,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--r-sm);font-size:14px;background:#fbfcfb;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
+input::placeholder,textarea::placeholder{color:#a4b0aa}
+input:focus,select:focus,textarea:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 4px rgba(15,107,79,.12)}
+textarea{resize:vertical}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:var(--r-sm);font-size:14px;font-weight:600;border:0;cursor:pointer;transition:transform .15s,box-shadow .2s,background .2s}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 6px 16px rgba(15,107,79,.28)}
+.btn-primary:hover{background:#0c5d44;transform:translateY(-1px)}
+.btn-success{background:var(--orange);color:#fff;box-shadow:0 6px 16px rgba(240,138,36,.32)}
+.btn-success:hover{background:#e07a15;transform:translateY(-1px)}
+
+/* ===== Tableaux ===== */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 14px;font-size:12px;color:var(--muted);font-weight:600;border-bottom:1.5px solid var(--line);white-space:nowrap}
+td{padding:14px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:#f7faf8}
+.badge{display:inline-block;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600;margin:2px 2px 2px 0}
+.badge-code{background:var(--orange-soft);color:#b35f0a;font-variant-numeric:tabular-nums}
+.badge-class{background:var(--green-soft);color:var(--green)}
+.btn-delete{color:var(--danger);background:var(--danger-soft);border:0;padding:7px 14px;border-radius:9px;cursor:pointer;font-size:12.5px;font-weight:600;transition:background .2s}
+.btn-delete:hover{background:#fad7d4}
+
+/* ===== Assistant IA ===== */
+.ai-chat-box{background:linear-gradient(180deg,#f8faf9,#f1f6f3);border:1px solid var(--line);border-radius:var(--r);height:400px;overflow-y:auto;padding:22px;margin-bottom:16px;display:flex;flex-direction:column;gap:12px}
+.ai-msg{max-width:78%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.55}
+.ai-msg.bot{background:#fff;align-self:flex-start;border:1px solid var(--line);border-bottom-left-radius:5px}
+.ai-msg.user{background:var(--green);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+.ai-input-row{display:flex;gap:10px}
+.ai-input-row input{border-radius:999px;padding-left:20px}
+.ai-input-row .btn{border-radius:999px}
+
+.actions-end{display:flex;justify-content:flex-end;margin-top:22px}
+.empty{text-align:center;color:var(--muted);padding:28px 14px}
+
+.week{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.day{background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;min-height:90px}
+.day h4{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--green)}
+.slot{border-left:3px solid var(--orange);background:#fbfcfb;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:12.5px}
+.slot b{display:block;font-size:13px;margin-top:2px}
+.slot small{color:var(--muted)}
+.slot .btn-delete{margin-top:6px;font-size:11px;padding:3px 9px}
+.none{color:#b3beb8;font-size:12px}
+.typing{opacity:.6}
+.note{font-size:12px;color:var(--muted);margin-top:6px;display:block}
+
+/* ===== Mobile / tablette ===== */
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:sticky;height:auto;flex-direction:row;align-items:center;padding:10px 12px;gap:8px;z-index:20;overflow:visible;padding-top:max(10px,env(safe-area-inset-top))}
+  .brand{padding:0 6px 0 0}
+  .brand div,.nav-label,.side-foot{display:none}
+  .nav{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .tab-btn{width:auto;white-space:nowrap;padding:10px 14px;border-radius:999px;font-size:13px}
+  .tab-btn.active::before{display:none}
+  .tab-btn.active{background:var(--orange);color:#fff}
+  .main{padding:0 16px 36px}
+  .topbar{padding:20px 0 18px;margin:0;position:static;background:none}
+  .topbar h1{font-size:21px}
+  .card{padding:20px}
+  .ai-msg{max-width:90%}
+  .logout-btn span{display:none}
+}
+/* ===== Édition Luxe : noir profond & or champagne ===== */
+:root{--bg:#f4f2ee;--ink:#14151a;--muted:#74766f;--line:#e7e3da;--green:#17181e;--green-deep:#0e1015;--green-soft:#f3ecda;--orange:#c9a24d;--orange-soft:#f7f0de;--shadow:0 1px 2px rgba(20,21,26,.04),0 12px 32px rgba(20,21,26,.07)}
+body{background:radial-gradient(1200px 500px at 80% -10%,#efe7d3 0%,transparent 60%),var(--bg)}
+.sidebar{background:linear-gradient(185deg,#16171d 0%,#0b0c10 100%);border-right:1px solid rgba(201,162,77,.18)}
+.brand-mark{background:linear-gradient(135deg,#e3c67a,#b8934a);color:#14151a;font-family:"Cormorant Garamond",serif;font-size:24px;box-shadow:0 6px 18px rgba(201,162,77,.35)}
+.brand b{font-family:"Cormorant Garamond",serif;font-size:23px;letter-spacing:.02em}
+.nav-label{color:rgba(227,198,122,.55);letter-spacing:.14em;text-transform:uppercase;font-size:10px}
+.tab-btn.active{background:linear-gradient(90deg,rgba(201,162,77,.22),rgba(201,162,77,.04));color:#f3dc9b}
+.topbar h1,.card-title{font-family:"Cormorant Garamond",serif;letter-spacing:0}
+.topbar h1{font-size:34px;font-weight:700}
+.card-title{font-size:22px;font-weight:700}
+.card{transition:transform .25s,box-shadow .25s}.card:hover{box-shadow:0 18px 44px rgba(20,21,26,.1)}
+.btn-primary{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;box-shadow:0 8px 20px rgba(14,16,21,.28)}
+.btn-primary:hover{background:#000;box-shadow:0 10px 26px rgba(14,16,21,.38)}
+.btn-success{background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;box-shadow:0 8px 20px rgba(184,147,74,.35)}
+.btn-success:hover{background:linear-gradient(135deg,#ecd08a,#c29b4f)}
+.badge-code{color:#8a6a22}.badge-class{background:#efe9da;color:#2a2b31}
+input:focus,select:focus,textarea:focus{border-color:#b8934a;box-shadow:0 0 0 4px rgba(201,162,77,.18)}
+.ai-msg.user{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b}
+.day h4{color:#8a6a22}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:22px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,#b8934a,#f0dc9c,transparent)}
+.kpi small{color:var(--muted);font-weight:600;font-size:12px}
+.kpi b{display:block;font-family:"Cormorant Garamond",serif;font-size:34px;line-height:1.15;margin-top:4px}
+.bar{height:8px;border-radius:8px;background:#ece8df;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#b8934a,#e8cf86)}
+.lvl{display:grid;grid-template-columns:96px 1fr 70px;gap:12px;align-items:center;margin-bottom:14px;font-size:13px}
+.alert{display:flex;gap:10px;padding:12px 14px;border-radius:var(--r-sm);background:#f8f6f0;margin-bottom:10px;font-size:13.5px}
+.alert.warn{background:#fdf0e2}.alert.good{background:#e8f5ee}
+.seg{display:inline-block;margin-right:6px}.seg input{display:none}
+.seg span{display:inline-block;padding:6px 13px;border-radius:999px;border:1.5px solid var(--line);font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg-P input:checked+span{background:#e1f6ea;border-color:#1f9d63;color:#1f9d63}
+.seg-R input:checked+span{background:#fdf0e2;border-color:#e08a1e;color:#b36a0a}
+.seg-A input:checked+span{background:var(--danger-soft);border-color:var(--danger);color:var(--danger)}
+.pill{padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700}
+.pill.ok{background:#e1f6ea;color:#1f9d63}.pill.mid{background:#fdf0e2;color:#b36a0a}.pill.no{background:var(--danger-soft);color:var(--danger)}
+@media(max-width:900px){.tab-btn.active{background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608}.topbar h1{font-size:27px}.lvl{grid-template-columns:78px 1fr 44px}}
+.clk{cursor:pointer}.clk:hover td{background:#faf5e6!important}
+.crumb{margin:4px 0 18px;font-size:13.5px;color:var(--muted)}.crumb a{color:#8a6a22;font-weight:700;cursor:pointer}
+.receipt-ov{display:none;position:fixed;inset:0;background:rgba(10,11,15,.62);z-index:50;align-items:center;justify-content:center;padding:20px}
+.receipt-box{background:#fff;border-radius:18px;padding:32px;max-width:440px;width:100%;border-top:5px solid #c9a24d}
+.receipt-box h2{font-family:"Cormorant Garamond",serif;font-size:28px;margin-bottom:2px}
+.receipt-box .row{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.receipt-box .big{font-family:"Cormorant Garamond",serif;font-size:30px;text-align:center;margin:16px 0}
+@media print{.app{display:none!important}.receipt-ov{display:flex!important;position:static;background:none}.noprint{display:none!important}}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0c10">
+<script>/* Accès réservé + mode aperçu. Sans connexion, la page affiche un écran d'accueil avec un lien vers la connexion et un aperçu en données d'exemple (stockage en mémoire : rien de réel n'est lu ni écrit). Ce contrôle est côté navigateur : il doit être doublé par une vérification serveur. */(function(){
+var ROLE='ADMIN',ME=["apercu", "Directeur"],SAMPLE={"schoolDatabase":{"6ème":{"1":[]},"Terminale":{"1":[{"name":"Agoua Ruben","code":"CI-2026-897"},{"name":"Koffi Emmanuel","code":"CI-2026-898"},{"name":"Kassi Estelle","code":"CI-2026-905"},{"name":"Traoré Mohamed","code":"CI-2026-906"}],"2":[]}},"timetablesDatabase":{"Terminale 1":[{"id":1,"day":"Lundi","time":"08:00 - 10:00","subject":"Mathématiques","prof":"M. Kouassi"},{"id":2,"day":"Mardi","time":"10:15 - 12:15","subject":"Physique-Chimie","prof":"M. Koffi"},{"id":3,"day":"Mercredi","time":"08:00 - 10:00","subject":"Mathématiques","prof":"M. Kouassi"},{"id":4,"day":"Jeudi","time":"15:00 - 17:00","subject":"Français","prof":"Mme Traoré"},{"id":5,"day":"Vendredi","time":"08:00 - 10:00","subject":"Anglais","prof":"M. Diallo"}]},"receivedGradesDatabase":{"Terminale 1":[{"code":"CI-2026-897","name":"Agoua Ruben","grade":"15.2","comment":"Moyenne de 2 matières","status":"Transmis par M. Kouassi, M. Koffi","subjects":[{"subject":"Mathématiques","prof":"M. Kouassi","grade":"15.6","comment":"Excellent trimestre, régulier."},{"subject":"Physique-Chimie","prof":"M. Koffi","grade":"14.8","comment":"Bon travail."}]},{"code":"CI-2026-898","name":"Koffi Emmanuel","grade":"13.2","comment":"Bon travail, des progrès.","status":"Transmis par M. Kouassi"},{"code":"CI-2026-905","name":"Kassi Estelle","grade":"16.8","comment":"Très rigoureuse.","status":"Transmis par M. Kouassi"}]},"publishedBulletins":{"Terminale 1":true},"attendanceDatabase":{"Terminale 1":{"2026-09-11#08:00 - 10:00":{"CI-2026-897":{"s":"A","note":"Non justifié","subject":"Mathématiques","time":"08:00 - 10:00"},"CI-2026-898":{"s":"P"}},"2026-09-04#10:15 - 12:15":{"CI-2026-897":{"s":"R","note":"10 min","subject":"Physique-Chimie","time":"10:15 - 12:15"},"CI-2026-898":{"s":"A","subject":"Physique-Chimie","time":"10:15 - 12:15"}}}},"feesDatabase":{"annual":0,"byLevel":{"Terminale":200000,"6ème":120000},"discounts":{},"payments":[{"id":1,"code":"CI-2026-897","amount":200000,"mode":"Wave","ref":"Solde","date":"2026-10-02"},{"id":2,"code":"CI-2026-898","amount":80000,"mode":"Orange Money","ref":"Tranche 1","date":"2026-10-05"}]},"announcementsDb":[{"id":1,"title":"Réunion d'orientation des Terminales","message":"Toutes les classes de Terminale sont convoquées à la grande salle ce samedi à 09h00.","date":"16/10/2026"}],"professorsDb":[{"id":1,"name":"M. Kouassi","subject":"Mathématiques","classes":["Terminale 1"]}]},L=location.pathname.indexOf('/pages/')>-1?'../../login.html':'login.html',BASE=location.href.split(/[?#]/)[0];
+function fixLinks(){document.querySelectorAll('a[href$="login.html"]').forEach(function(x){x.setAttribute('href',L)})}
+function ribbon(){var d=document.createElement('div');d.textContent="Aperçu · données d'exemple · rien n'est enregistré";d.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;background:#c9a24d;color:#1b1608;font:700 12px sans-serif;padding:6px 14px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap';document.body.appendChild(d)}
+function gate(){var d=document.createElement('div');d.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:100000;background:#0b0c10;color:#f1ede3;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow:auto';d.innerHTML='<div style="max-width:380px"><h1 style="font-size:28px;color:#f3dc9b;margin-bottom:10px">Accès réservé</h1><p style="color:#b9bcc8;margin-bottom:22px;line-height:1.5">Connectez-vous pour ouvrir cet espace. Ouvrez la page <b>login.html</b>, située dans le même dossier.</p><a href="'+L+'" style="display:block;padding:14px;border-radius:12px;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;font-weight:800;text-decoration:none;margin-bottom:10px">Se connecter</a><a href="'+BASE+'?apercu" style="display:block;padding:12px;border-radius:12px;border:1px solid #3a3f4d;color:#f3dc9b;text-decoration:none;font-weight:600">Voir un aperçu avec des données d\'exemple</a></div>';document.body.appendChild(d)}
+function mem(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}
+if(/[?&]apercu(=|&|$)/.test(location.search)){
+  var ls=mem(),ss=mem();
+  try{Object.defineProperty(window,'localStorage',{value:ls,configurable:true});Object.defineProperty(window,'sessionStorage',{value:ss,configurable:true})}catch(e){}
+  ls.setItem('scolaci_db_v1',JSON.stringify(SAMPLE));ss.setItem('scolaci_session',JSON.stringify({role:ROLE,id:ME[0],name:ME[1],exp:Date.now()+36e5}));
+  document.addEventListener('DOMContentLoaded',function(){fixLinks();ribbon()});return;
+}
+document.addEventListener('DOMContentLoaded',fixLinks);
+var ok=false;try{var s=JSON.parse(sessionStorage.getItem('scolaci_session')||'null');ok=!!(s&&s.role===ROLE&&s.exp>Date.now())}catch(e){}
+if(!ok){try{var r=JSON.parse(localStorage.getItem('scolaci_remember')||'null');if(r&&r.role===ROLE&&r.exp>Date.now()){location.replace(L);return}}catch(e){}document.addEventListener('DOMContentLoaded',gate)}
+})();</script>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== Barre latérale ===== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">S</div>
+      <div><b>ScolACI</b><small>Portail éducatif</small></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Pilotage</div>
+      <button class="tab-btn active" onclick="switchTab('dashboard', this)" data-title="Tableau de bord" data-sub="Vue d'ensemble de votre établissement en un coup d'œil">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="9" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="12" width="8" height="9" rx="2"/><rect x="3" y="16" width="8" height="5" rx="2"/></svg>
+        Tableau de bord</button>
+      <div class="nav-label">Assistant</div>
+      <button class="tab-btn" onclick="switchTab('ai', this)" data-title="Assistant IA ScolACI" data-sub="Posez vos questions, analysez vos effectifs, obtenez de l'aide administrative">
+        <svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+        Assistant IA</button>
+
+      <div class="nav-label">Organisation</div>
+      <button class="tab-btn" onclick="switchTab('classes', this)" data-title="Classes & Professeurs" data-sub="Créez des classes et attribuez-les aux enseignants">
+        <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-5h4v5"/></svg>
+        Classes & Professeurs</button>
+      <button class="tab-btn" onclick="switchTab('profs', this)" data-title="Répertoire des Professeurs" data-sub="Enseignants et classes prises en charge">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>
+        Répertoire Professeurs</button>
+      <button class="tab-btn" onclick="switchTab('hierarchy', this)" data-title="Répertoire & Listes" data-sub="Consultez les élèves par niveau et par classe">
+        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Répertoire & Listes</button>
+      <button class="tab-btn" onclick="switchTab('timetable', this)" data-title="Emplois du Temps" data-sub="Programmez et modifiez les plannings de chaque classe">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        Emplois du Temps</button>
+
+      <div class="nav-label">Suivi</div>
+      <button class="tab-btn" onclick="switchTab('students', this)" data-title="Gestion des Élèves" data-sub="Inscrivez et gérez les élèves de l'établissement">
+        <svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+        Gestion des Élèves</button>
+      <button class="tab-btn" onclick="switchTab('grades', this)" data-title="Notes & Bulletins" data-sub="Réception des notes et diffusion des bulletins">
+        <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        Notes & Bulletins</button>
+      <button class="tab-btn" onclick="switchTab('centre', this)" data-title="Annonces" data-sub="Communiquez avec toute la communauté scolaire">
+        <svg viewBox="0 0 24 24"><path d="M3 11v3a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM15 9a4 4 0 010 6M18 6a8 8 0 010 12"/></svg>
+        Annonces</button>
+
+      <div class="nav-label">Vie scolaire & finances</div>
+      <button class="tab-btn" onclick="switchTab('attendance', this)" data-title="Suivi des présences" data-sub="Assiduité des classes — les appels sont saisis par les professeurs">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>
+        Présences</button>
+      <button class="tab-btn" onclick="switchTab('fees', this)" data-title="Scolarité" data-sub="Frais de scolarité, paiements et suivi des impayés">
+        <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg>
+        Scolarité</button>
+
+      <div class="nav-label">Réglages</div>
+      <button class="tab-btn" onclick="switchTab('config', this)" data-title="Système" data-sub="Configuration générale de l'établissement">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+        Système</button>
+    </nav>
+    <div class="side-foot">Édition Administration<br>Côte d'Ivoire</div>
+  </aside>
+
+  <!-- ===== Contenu ===== -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Tableau de bord</h1>
+        <p id="pageSub">Vue d'ensemble de votre établissement en un coup d'œil</p>
+      </div>
+      <a href="../../login.html" onclick="scolaciLogout()" class="logout-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <span>Déconnexion</span></a>
+    </header>
+
+    <!-- PANNEAU : Tableau de bord -->
+    <section id="panel-dashboard" class="panel active">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Répartition par niveau</div><div id="dashLevels" style="margin-top:20px"></div></div>
+        <div class="card"><div class="card-title">Points d'attention</div><div id="dashAlerts" style="margin-top:20px"></div></div>
+      </div>
+    </section>
+
+        <!-- PANNEAU : Présences (consultation) -->
+    <section id="panel-attendance" class="panel">
+      <div class="card">
+        <div class="card-title">Assiduité par classe</div>
+        <p class="card-sub">Les appels sont saisis par les professeurs depuis leur espace. Vous consultez ici les absences et retards remontés pour chaque classe.</p>
+        <div class="form-group" style="max-width:380px"><label>Classe</label><input type="text" id="attClass" list="classList" placeholder="Ex: Terminale 1" oninput="renderAttendance()"></div>
+        <div id="attStats" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- PANNEAU : Scolarité -->
+    <section id="panel-fees" class="panel">
+      <div class="kpis" id="feeKpis"></div>
+
+      <div class="card">
+        <div class="card-title">Suivi par niveau et par classe</div>
+        <p class="card-sub">Cliquez sur un niveau, puis sur une classe, pour descendre jusqu'à la liste des élèves.</p>
+        <div id="feeCrumb" class="crumb"></div>
+        <div class="table-wrap" id="feeView"></div>
+        <div class="actions-end"><button class="btn btn-primary" onclick="exportFeesCsv()">Exporter la sélection (CSV)</button></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Encaisser un paiement</div>
+        <datalist id="codeList"></datalist>
+        <form onsubmit="addPayment(event)" style="margin-top:20px">
+          <div class="grid-3">
+            <div class="form-group"><label>Matricule de l'élève</label><input type="text" id="payCode" list="codeList" placeholder="Ex: CI-2026-897" oninput="updatePayHint()" required></div>
+            <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="payAmount" min="1" required></div>
+            <div class="form-group"><label>Mode de paiement</label><select id="payMode"><option>Espèces</option><option>Orange Money</option><option>MTN Money</option><option>Wave</option><option>Virement</option></select></div>
+          </div>
+          <div class="form-group"><label>Référence / note (optionnel)</label><input type="text" id="payRef" placeholder="Ex: Tranche 1, n° de transaction"></div>
+          <p class="note" id="payHint" style="margin:-6px 0 14px"></p>
+          <button type="submit" class="btn btn-success">+ Enregistrer et éditer le reçu</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Journal des paiements</div>
+        <div class="table-wrap" style="margin-top:18px" id="payJournal"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Barème des frais par niveau</div>
+        <p class="card-sub">Montant annuel de la scolarité demandé à chaque élève, selon son niveau.</p>
+        <div class="grid-3" id="feeScale"></div>
+      </div>
+    </section>
+
+    <div id="receipt" class="receipt-ov" onclick="if(event.target===this)this.style.display='none'"><div class="receipt-box" id="receiptBox"></div></div>
+
+<!-- PANNEAU : Assistant IA -->
+    <section id="panel-ai" class="panel">
+      <div class="card">
+        <div class="card-title">Assistant intelligent ScolACI</div>
+        <p class="card-sub">Posez des questions sur vos classes, élèves, emplois du temps et notes, ou demandez de rédiger une annonce. Tapez « aide » pour voir tout ce que je sais faire.</p>
+        <div class="ai-chat-box" id="aiChatBox">
+          <div class="ai-msg bot">Bonjour ! Je suis l'IA de ScolACI. Comment puis-je vous aider dans la gestion de votre établissement aujourd'hui ?</div>
+        </div>
+        <form onsubmit="sendAiMessage(event)" class="ai-input-row">
+          <input type="text" id="aiUserInput" placeholder="Ex : Combien de classes sont créées ? / Analyse l'effectif..." required>
+          <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- PANNEAU 1 : Classes & Professeurs -->
+    <section id="panel-classes" class="panel">
+      <div class="card">
+        <div class="card-title">Créer une nouvelle classe</div>
+        <form onsubmit="addClass(event)">
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Niveau</label>
+              <select id="classLevel">
+                <option value="6ème">6ème</option><option value="5ème">5ème</option><option value="4ème">4ème</option>
+                <option value="3ème">3ème</option><option value="2nde">2nde</option><option value="1ère">1ère</option><option value="Terminale">Terminale</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Indice / Numéro de classe</label>
+              <input type="text" id="className" placeholder="Ex: 1, 5, 10 ou A" required>
+            </div>
+            <div class="form-group">
+              <label>Professeur principal (optionnel)</label>
+              <input type="text" id="classProf" placeholder="Ex: M. Kouassi">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">+ Créer la classe</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Attribuer des classes à un professeur</div>
+        <form onsubmit="assignClassesToProf(event)">
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Nom & matière du professeur</label>
+              <input type="text" id="profInputName" placeholder="Ex: M. Koffi - Physique" required>
+            </div>
+            <div class="form-group">
+              <label>Classes attribuées (séparées par des virgules)</label>
+              <input type="text" id="profAssignedClasses" placeholder="Ex: 6ème 1, 6ème 5, 3ème A" required>
+            </div>
+            <div class="form-group" style="display:flex;align-items:flex-end;">
+              <button type="submit" class="btn btn-primary" style="width:100%;">Enregistrer l'attribution</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Liste globale des classes</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nom de la classe</th><th>Niveau</th><th>Professeur principal</th><th>Action</th></tr></thead>
+            <tbody id="classesTable">
+              <tr>
+                <td><strong>6ème 1</strong></td><td>6ème</td><td>M. Koné</td>
+                <td><button class="btn-delete" onclick="this.closest('tr').remove()">Supprimer</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANNEAU 2 : Répertoire des Professeurs -->
+    <section id="panel-profs" class="panel">
+      <div class="card">
+        <div class="card-title">Enseignants & classes prises en charge</div>
+        <p class="card-sub">Retrouvez la liste de chaque professeur ainsi que l'ensemble des classes et matières qui lui sont attribuées.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nom & matière du professeur</th><th>Classes attribuées</th><th>Action</th></tr></thead>
+            <tbody id="professorsTableBody">
+              <tr>
+                <td><strong>M. Koffi - Physique</strong></td>
+                <td><span class="badge badge-class">6ème 1</span> <span class="badge badge-class">3ème A</span></td>
+                <td><button class="btn-delete" onclick="this.closest('tr').remove()">Retirer</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANNEAU 3 : Répertoire & Listes -->
+    <section id="panel-hierarchy" class="panel">
+      <div class="card">
+        <div class="card-title">Consultation par niveau & classe</div>
+        <p class="card-sub">Sélectionnez un niveau et une classe pour afficher instantanément la liste alphabétique des élèves.</p>
+        <div class="grid-2" style="margin-bottom:22px;">
+          <div class="form-group" style="margin:0">
+            <label>Niveau</label>
+            <select id="selectLevelFilter" onchange="updateClassDropdown()">
+              <option value="6ème">6ème</option><option value="5ème">5ème</option><option value="4ème">4ème</option>
+              <option value="3ème">3ème</option><option value="2nde">2nde</option><option value="1ère">1ère</option><option value="Terminale">Terminale</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label>Classe (indice)</label>
+            <select id="selectClassFilter" onchange="renderClassStudentList()">
+              <option value="">-- Sélectionnez une classe --</option>
+            </select>
+          </div>
+        </div>
+        <div class="inset">
+          <h3 id="currentClassTitle">Veuillez sélectionner un niveau et une classe</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Matricule</th><th>Nom et prénom de l'élève</th><th>Action</th></tr></thead>
+              <tbody id="filteredStudentsTableBody">
+                <tr><td colspan="3" class="empty">Aucune sélection active</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANNEAU 4 : Emplois du temps -->
+    <section id="panel-timetable" class="panel">
+      <datalist id="classList"></datalist>
+      <div class="card">
+        <div class="card-title">Ajouter un cours à l'emploi du temps</div>
+        <p class="card-sub">Le cours enregistré apparaît dans l'emploi du temps de la classe (élèves) et dans celui du professeur.</p>
+        <form onsubmit="saveSchedule(event)">
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Classe concernée</label>
+              <input type="text" id="ttTargetClass" list="classList" placeholder="Ex: 6ème 1 ou Terminale 1" required>
+            </div>
+            <div class="form-group">
+              <label>Jour de la semaine</label>
+              <select id="ttDay">
+                <option value="Lundi">Lundi</option><option value="Mardi">Mardi</option><option value="Mercredi">Mercredi</option>
+                <option value="Jeudi">Jeudi</option><option value="Vendredi">Vendredi</option><option value="Samedi">Samedi</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Horaires (créneau)</label>
+              <input type="text" id="ttTime" placeholder="Ex: 08:00 - 10:00" required>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Matière</label>
+              <input type="text" id="ttSubject" placeholder="Ex: Mathématiques" required>
+            </div>
+            <div class="form-group">
+              <label>Professeur responsable</label>
+              <input type="text" id="ttProf" placeholder="Ex: M. Kouassi" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">+ Ajouter ce cours au planning</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✨ Générer avec l'IA</div>
+        <p class="card-sub">Décrivez les matières, professeurs et volumes horaires. L'IA propose un planning sans conflit ; vous validez avant l'enregistrement.</p>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Classe</label>
+            <input type="text" id="aiTtClass" list="classList" placeholder="Ex: Terminale 2">
+          </div>
+          <div class="form-group">
+            <label>Matières, professeurs et contraintes</label>
+            <textarea id="aiTtBrief" rows="3" placeholder="Ex: Maths 5h avec M. Kouassi, Physique 3h avec M. Koffi, Français 4h. Cours de 08:00 à 17:00, pas de cours le samedi après-midi."></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="aiTtBtn" onclick="aiGenerateTimetable()">Générer la proposition</button>
+        <div id="aiTtPreview" style="margin-top:20px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Consulter les emplois du temps</div>
+        <div class="grid-2" style="margin:22px 0;">
+          <div class="form-group" style="margin:0">
+            <label>Afficher par</label>
+            <select id="ttViewMode" onchange="renderClassTimetable()">
+              <option value="class">Classe (vue élèves)</option>
+              <option value="prof">Professeur</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label>Recherche</label>
+            <input type="text" id="viewTtClassInput" list="classList" placeholder="Tapez la classe (ex: 6ème 1)" oninput="renderClassTimetable()">
+          </div>
+        </div>
+        <div class="inset">
+          <h3 id="ttDisplayTitle">Entrez une classe pour voir son emploi du temps</h3>
+          <div id="ttGrid"><p class="empty">Aucune sélection active</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANNEAU 5 : Élèves -->
+    <section id="panel-students" class="panel">
+      <div class="card">
+        <div class="card-title">Inscrire un élève</div>
+        <form onsubmit="addStudent(event)">
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Nom complet</label>
+              <input type="text" id="stName" placeholder="Ex: Koffi Emmanuel" required>
+            </div>
+            <div class="form-group">
+              <label>Niveau</label>
+              <select id="stLevel">
+                <option value="6ème">6ème</option><option value="5ème">5ème</option><option value="4ème">4ème</option>
+                <option value="3ème">3ème</option><option value="2nde">2nde</option><option value="1ère">1ère</option><option value="Terminale">Terminale</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Indice de classe</label>
+              <input type="text" id="stClassIndex" placeholder="Ex: 1 ou A" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Matricule / Code</label>
+            <input type="text" id="stCode" placeholder="Ex: CI-2026-102" required>
+          </div>
+          <button type="submit" class="btn btn-primary">+ Enregistrer l'élève</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Répertoire global des élèves</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Matricule</th><th>Nom complet</th><th>Classe</th><th>Action</th></tr></thead>
+            <tbody id="studentsTable">
+              <tr data-code="CI-2026-897">
+                <td><span class="badge badge-code">CI-2026-897</span></td>
+                <td>Agoua Ruben</td>
+                <td>Terminale 1</td>
+                <td><button class="btn-delete" onclick="removeStudentGlobal('Terminale', '1', 'CI-2026-897', this)">Retirer</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANNEAU 6 : Notes & Bulletins -->
+    <section id="panel-grades" class="panel">
+      <div class="card">
+        <div class="card-title">Notes transmises par les professeurs</div>
+        <p class="card-sub">Sélectionnez un niveau et une classe pour consulter les notes envoyées par les enseignants, puis diffusez les bulletins aux élèves.</p>
+        <div class="grid-2" style="margin-bottom:22px;">
+          <div class="form-group" style="margin:0">
+            <label>Niveau</label>
+            <select id="adminGradeLevel" onchange="updateAdminGradeClassDropdown()">
+              <option value="6ème">6ème</option><option value="5ème">5ème</option><option value="4ème">4ème</option>
+              <option value="3ème">3ème</option><option value="2nde">2nde</option><option value="1ère">1ère</option><option value="Terminale" selected>Terminale</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label>Classe (indice)</label>
+            <select id="adminGradeClass" onchange="renderAdminGradesTable()">
+              <option value="1">Terminale 1</option>
+              <option value="2">Terminale 2</option>
+            </select>
+          </div>
+        </div>
+        <div class="inset">
+          <h3 id="adminGradeTitle">Notes transmises pour : Terminale 1</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Matricule</th><th>Élève</th><th>Moyenne trimestrielle</th><th>Appréciation</th><th>Statut</th></tr></thead>
+              <tbody id="adminGradesTableBody"></tbody>
+            </table>
+          </div>
+          <div class="actions-end">
+            <button class="btn btn-success" onclick="publishClassBulletins()">🚀 Diffuser les bulletins de cette classe</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANNEAU 7 : Annonces -->
+    <section id="panel-centre" class="panel">
+      <div class="card" style="max-width:760px;">
+        <div class="card-title">Publier une annonce</div>
+        <div class="form-group" style="margin-top:22px;">
+          <label>Titre</label>
+          <input type="text" id="annTitle" placeholder="Ex: Réunion de rentrée">
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="annMsg" rows="5" placeholder="Message diffusé à l'établissement..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="publishAnnouncement()">Diffuser l'annonce</button>
+      </div>
+    </section>
+
+    <!-- PANNEAU 8 : Configuration -->
+    <section id="panel-config" class="panel">
+      <div class="card" style="max-width:860px;">
+        <div class="card-title">Configuration de l'établissement</div>
+        <div class="grid-2" style="margin-top:22px;">
+          <div class="form-group">
+            <label>Nom ou type de l'établissement</label>
+            <input type="text" id="configSchoolName" placeholder="Ex: Lycée International Abidjan..." required>
+          </div>
+          <div class="form-group">
+            <label>Localisation / Pays</label>
+            <input type="text" id="configLocation" value="Abidjan, Côte d'Ivoire">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="alert('Paramètres sauvegardés avec succès !')">Enregistrer</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+const schoolDatabase = {
+  "6ème": { "1": [], "10": [] },
+  "5ème": {}, "4ème": {}, "3ème": {}, "2nde": {}, "1ère": {},
+  "Terminale": {
+    "1": [{ name: "Agoua Ruben", code: "CI-2026-897" }],
+    "2": [{ name: "Kassi Estelle", code: "CI-2026-905" }]
+  }
+};
+
+const timetablesDatabase = {
+  "Terminale 1": [{ id: 1, day: "Lundi", time: "08:00 - 10:00", subject: "Mathématiques", prof: "M. Kouassi" }]
+};
+
+const receivedGradesDatabase = {
+  "Terminale 1": [{ code: "CI-2026-897", name: "Agoua Ruben", grade: "15.6", comment: "Excellent trimestre, régulier.", status: "Transmis par M. Kouassi" }],
+  "Terminale 2": [{ code: "CI-2026-905", name: "Kassi Estelle", grade: "16.8", comment: "Très rigoureuse.", status: "Transmis par M. Kouassi" }]
+};
+
+const attendanceDatabase = {};
+const feesDatabase = { annual: 0, byLevel: {}, discounts: {}, payments: [] };
+const publishedBulletins = {};
+const announcementsDb = [];
+const professorsDb = [];
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  if (btn) {
+    btn.classList.add('active');
+    document.getElementById('pageTitle').textContent = btn.dataset.title;
+    document.getElementById('pageSub').textContent = btn.dataset.sub;
+    btn.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }
+  document.getElementById('panel-' + tabId).classList.add('active');
+  window.scrollTo({ top: 0 });
+  if (tabId === 'hierarchy') updateClassDropdown();
+  if (tabId === 'grades') updateAdminGradeClassDropdown();
+  if (tabId === 'dashboard') renderDashboard();
+  if (tabId === 'attendance') renderAttendance();
+  if (tabId === 'fees') renderFees();
+}
+
+// ===== Persistance partagée (admin / professeurs / élèves) =====
+const DB_KEY = 'scolaci_db_v1';
+const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+function saveAll() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify({ schoolDatabase, timetablesDatabase, receivedGradesDatabase, attendanceDatabase, feesDatabase, publishedBulletins, announcementsDb, professorsDb })); } catch (e) {}
+  refreshClassList();
+}
+function loadAll() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DB_KEY) || 'null');
+    if (!d) return;
+    Object.assign(schoolDatabase, d.schoolDatabase || {});
+    Object.assign(timetablesDatabase, d.timetablesDatabase || {});
+    Object.assign(receivedGradesDatabase, d.receivedGradesDatabase || {});
+    Object.assign(attendanceDatabase, d.attendanceDatabase || {});
+    Object.assign(feesDatabase, d.feesDatabase || {});
+    Object.assign(publishedBulletins, d.publishedBulletins || {});
+    announcementsDb.splice(0, announcementsDb.length, ...(d.announcementsDb || []));
+    professorsDb.splice(0, professorsDb.length, ...(d.professorsDb || []));
+  } catch (e) {}
+}
+function refreshClassList() {
+  const s = new Set(Object.keys(timetablesDatabase));
+  for (const l in schoolDatabase) for (const i in schoolDatabase[l]) s.add(l + ' ' + i);
+  document.getElementById('classList').innerHTML = [...s].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(c => `<option value="${escapeHtml(c)}">`).join('');
+}
+function renderGlobalStudents() {
+  const tb = document.getElementById('studentsTable');
+  tb.innerHTML = '';
+  for (const l in schoolDatabase) for (const i in schoolDatabase[l]) schoolDatabase[l][i].forEach(s => tb.insertAdjacentHTML('beforeend',
+    `<tr data-code="${escapeHtml(s.code)}"><td><span class="badge badge-code">${escapeHtml(s.code)}</span></td><td>${escapeHtml(s.name)}</td><td>${l} ${i}</td><td><button class="btn-delete" onclick="removeStudentGlobal('${l}','${i}','${s.code}',this)">Retirer</button></td></tr>`));
+}
+// Déconnexion : efface la session mais garde les données de l'école
+function scolaciLogout() {
+  sessionStorage.removeItem('scolaci_session');
+  Object.keys(localStorage).filter(k => !k.startsWith('scolaci_db_')).forEach(k => localStorage.removeItem(k));
+}
+loadAll(); renderGlobalStudents(); refreshClassList();
+
+// ===== Assistant IA (Claude via votre serveur proxy) =====
+// Mettez ici l'adresse de votre serveur une fois déployé (voir proxy-claude.js)
+const AI_ENDPOINT = ''; // Laissez vide = assistant local gratuit. Pour activer Claude : 'https://votre-serveur/api/chat'
+const aiHistory = [];
+
+function schoolContext() {
+  const classes = {};
+  for (const l in schoolDatabase) for (const i in schoolDatabase[l]) classes[`${l} ${i}`] = schoolDatabase[l][i].map(s => `${s.name} (${s.code})`);
+  return JSON.stringify({
+    etablissement: document.getElementById('configSchoolName').value || 'non renseigné',
+    classes_et_eleves: classes,
+    emplois_du_temps: timetablesDatabase,
+    notes_recues: receivedGradesDatabase
+  }).slice(0, 15000);
+}
+
+async function callAI(task, messages) {
+  if (!AI_ENDPOINT) throw new Error('IA en ligne désactivée');
+  const r = await fetch(AI_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ task, messages, context: schoolContext() })
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || d.error) throw new Error(d.error || 'HTTP ' + r.status);
+  return d.text;
+}
+
+function mdLite(s) {
+  return escapeHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/^[-*] /gm, '• ').replace(/\n/g, '<br>');
+}
+
+// ===== Tableau de bord, présences, scolarité =====
+const fmtF = n => new Intl.NumberFormat('fr-FR').format(n) + ' FCFA';
+const todayStr = () => new Date().toISOString().slice(0, 10);
+function allStudents() {
+  const a = [];
+  for (const l in schoolDatabase) for (const i in schoolDatabase[l]) schoolDatabase[l][i].forEach(s => a.push({ ...s, cls: `${l} ${i}`, lvl: l, idx: i }));
+  return a;
+}
+const studentPaid = code => feesDatabase.payments.filter(p => p.code === code).reduce((t, p) => t + p.amount, 0);
+const kpi = (label, val) => `<div class="kpi"><small>${label}</small><b>${val}</b></div>`;
+
+function renderDashboard() {
+  const lv = []; let st = 0, cl = 0;
+  for (const l in schoolDatabase) { const k = Object.keys(schoolDatabase[l]); const n = k.reduce((t, i) => t + schoolDatabase[l][i].length, 0); st += n; cl += k.length; if (k.length) lv.push([l, n, k.length]); }
+  const cours = Object.values(timetablesDatabase).reduce((t, a) => t + a.length, 0);
+  const paid = feesDatabase.payments.reduce((t, p) => t + p.amount, 0);
+  document.getElementById('kpis').innerHTML = kpi('Élèves inscrits', st) + kpi('Classes', cl) + kpi('Professeurs', allProfs().length) + kpi('Cours programmés', cours) + kpi('Scolarité encaissée', fmtF(paid));
+  const max = Math.max(1, ...lv.map(x => x[1]));
+  document.getElementById('dashLevels').innerHTML = lv.map(([l, n, c]) => `<div class="lvl"><b>${E(l)}</b><div class="bar"><i style="width:${Math.round(n / max * 100)}%"></i></div><span>${n} él. · ${c} cl.</span></div>`).join('') || '<p class="empty">Aucune classe.</p>';
+  const al = [], conf = scanConflicts().length;
+  if (conf) al.push(['warn', `⚠️ ${conf} conflit(s) dans les emplois du temps.`]);
+  const noTT = allClassNames().filter(c => !(timetablesDatabase[c] || []).length).length;
+  if (noTT) al.push(['warn', `📅 ${noTT} classe(s) sans emploi du temps.`]);
+  const empty = allClassNames().filter(c => { const l = Object.keys(schoolDatabase).find(x => c.startsWith(x + ' ')); return l && !(schoolDatabase[l][c.slice(l.length + 1)] || []).length; }).length;
+  if (empty) al.push(['', `🏫 ${empty} classe(s) sans élève inscrit.`]);
+  { const late = allStudents().filter(s => feeOf(s) > 0 && studentPaid(s.code) < feeOf(s)).length; if (late) al.push(['warn', `💳 ${late} élève(s) n'ont pas soldé la scolarité.`]); }
+  if (!al.length) al.push(['good', '✅ Tout est en ordre.']);
+  document.getElementById('dashAlerts').innerHTML = al.map(a => `<div class="alert ${a[0]}">${a[1]}</div>`).join('');
+}
+
+// ===== Présences : consultation (les appels sont saisis par les professeurs) =====
+function attClassStudents() {
+  const k = allClassNames().find(c => normQ(c) === normQ(document.getElementById('attClass').value));
+  const l = k && Object.keys(schoolDatabase).find(x => k.startsWith(x + ' '));
+  return { k, list: l ? (schoolDatabase[l][k.slice(l.length + 1)] || []).slice().sort((a, b) => a.name.localeCompare(b.name)) : [] };
+}
+const sv = v => (v && typeof v === 'object') ? v.s : v;
+function renderAttendance() {
+  const { k, list } = attClassStudents(), box = document.getElementById('attStats');
+  if (!k || !list.length) { box.innerHTML = '<p class="empty">Choisissez une classe qui contient des élèves.</p>'; return; }
+  const dates = Object.keys(attendanceDatabase[k] || {}).sort(), days = dates.map(d => attendanceDatabase[k][d]);
+  if (!days.length) { box.innerHTML = `<p class="empty">Aucun appel transmis par les professeurs pour ${E(k)}.</p>`; return; }
+  box.innerHTML = `<p class="card-sub" style="margin:0 0 14px">${days.length} appel(s) — dernier : ${E(dates[dates.length - 1].replace('#', ' · '))}</p><table><thead><tr><th>Élève</th><th>Appels</th><th>Absences</th><th>Retards</th><th>Assiduité</th></tr></thead><tbody>` + list.map(s => {
+    const a = days.filter(x => sv(x[s.code]) === 'A').length, r = days.filter(x => sv(x[s.code]) === 'R').length, rate = Math.round((days.length - a) / days.length * 100);
+    return `<tr><td><strong>${E(s.name)}</strong></td><td>${days.length}</td><td>${a}</td><td>${r}</td><td><span class="pill ${rate >= 90 ? 'ok' : rate >= 75 ? 'mid' : 'no'}">${rate}%</span></td></tr>`;
+  }).join('') + `</tbody></table>`;
+}
+
+// ===== Scolarité : barème par niveau, suivi niveau → classe → élève =====
+const feeLevel = l => (feesDatabase.byLevel[l] ?? feesDatabase.annual ?? 0);
+const feeOf = s => Math.max(0, feeLevel(s.lvl) - (feesDatabase.discounts[s.code] || 0));
+let feesView = { lvl: '', idx: '' };
+function feesGo(l, i) { feesView = { lvl: l, idx: i }; renderFeesBody(); }
+function groupStats(list) {
+  const due = list.reduce((t, s) => t + feeOf(s), 0), paid = list.reduce((t, s) => t + studentPaid(s.code), 0);
+  return { n: list.length, due, paid, rest: Math.max(0, due - paid), pct: due ? Math.min(100, Math.round(paid / due * 100)) : 0 };
+}
+const pillOf = pct => `<span class="pill ${pct >= 100 ? 'ok' : pct > 0 ? 'mid' : 'no'}">${pct >= 100 ? 'Soldé' : pct > 0 ? pct + '%' : 'Impayé'}</span>`;
+const scopeList = () => allStudents().filter(s => (!feesView.lvl || s.lvl === feesView.lvl) && (feesView.idx === '' || s.idx === feesView.idx));
+
+function setLevelFee(l, v) { feesDatabase.byLevel[l] = Math.max(0, +v || 0); renderFeesBody(); }
+function setDiscount(code) {
+  const s = allStudents().find(x => x.code === code); if (!s) return;
+  const v = prompt(`Remise / bourse pour ${s.name} (FCFA) :`, feesDatabase.discounts[code] || 0);
+  if (v === null) return;
+  feesDatabase.discounts[code] = Math.max(0, +v || 0); renderFeesBody();
+}
+function cancelPayment(id) {
+  if (confirm('Annuler ce paiement ?')) { feesDatabase.payments = feesDatabase.payments.filter(p => p.id !== id); renderFeesBody(); }
+}
+function updatePayHint() {
+  const s = allStudents().find(x => x.code === document.getElementById('payCode').value.trim());
+  document.getElementById('payHint').textContent = s ? `${s.name} — ${s.cls} · reste à payer : ${fmtF(Math.max(0, feeOf(s) - studentPaid(s.code)))}` : '';
+}
+function prefillPay(code) {
+  document.getElementById('payCode').value = code; updatePayHint();
+  document.getElementById('payAmount').focus(); document.getElementById('payAmount').scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+function addPayment(e) {
+  e.preventDefault();
+  const code = document.getElementById('payCode').value.trim(), amount = +document.getElementById('payAmount').value;
+  if (!allStudents().some(s => s.code === code)) { alert("Matricule introuvable. Inscrivez d'abord l'élève."); return; }
+  const id = Date.now();
+  feesDatabase.payments.push({ id, code, amount, mode: document.getElementById('payMode').value, ref: document.getElementById('payRef').value.trim(), date: todayStr() });
+  ['payCode', 'payAmount', 'payRef'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('payHint').textContent = '';
+  renderFeesBody(); showReceipt(id);
+}
+function showReceipt(id) {
+  const p = feesDatabase.payments.find(x => x.id === id), s = p && allStudents().find(x => x.code === p.code); if (!p || !s) return;
+  const rest = Math.max(0, feeOf(s) - studentPaid(s.code)), school = document.getElementById('configSchoolName').value.trim() || 'ScolACI';
+  document.getElementById('receiptBox').innerHTML = `<h2>${E(school)}</h2><small style="color:var(--muted)">REÇU DE PAIEMENT — N° ${String(id).slice(-6)}</small>
+    <div class="big">${fmtF(p.amount)}</div>
+    <div class="row"><span>Élève</span><b>${E(s.name)}</b></div><div class="row"><span>Matricule</span><b>${E(s.code)}</b></div>
+    <div class="row"><span>Classe</span><b>${E(s.cls)}</b></div><div class="row"><span>Date</span><b>${E(p.date)}</b></div>
+    <div class="row"><span>Mode</span><b>${E(p.mode)}${p.ref ? ' · ' + E(p.ref) : ''}</b></div><div class="row"><span>Reste à payer</span><b>${fmtF(rest)}</b></div>
+    <p style="margin-top:26px;font-size:12px;color:var(--muted)">Cachet et signature de l'administration</p>
+    <div class="actions-end noprint"><button class="btn btn-primary" onclick="window.print()">Imprimer</button>&nbsp;<button class="btn btn-success" onclick="document.getElementById('receipt').style.display='none'">Fermer</button></div>`;
+  document.getElementById('receipt').style.display = 'flex';
+}
+function exportFeesCsv() {
+  const rows = [['Matricule', 'Nom', 'Classe', 'Frais', 'Remise', 'Payé', 'Reste']].concat(scopeList().map(s => [s.code, s.name, s.cls, feeOf(s), feesDatabase.discounts[s.code] || 0, studentPaid(s.code), Math.max(0, feeOf(s) - studentPaid(s.code))]));
+  const csv = '\ufeff' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'scolarite-' + (feesView.lvl ? (feesView.lvl + (feesView.idx !== '' ? '-' + feesView.idx : '')) : 'etablissement') + '.csv';
+  a.click();
+}
+
+function renderFees() {
+  document.getElementById('feeScale').innerHTML = Object.keys(schoolDatabase).map(l =>
+    `<div class="form-group"><label>${E(l)}</label><input type="number" min="0" placeholder="FCFA" value="${feesDatabase.byLevel[l] ?? (feesDatabase.annual || '')}" data-l="${E(l)}" oninput="setLevelFee(this.dataset.l,this.value)"></div>`).join('');
+  renderFeesBody();
+}
+function renderFeesBody() {
+  const all = allStudents(), { lvl, idx } = feesView, scope = scopeList(), g = groupStats(scope);
+  document.getElementById('feeKpis').innerHTML = kpi('Élèves', g.n) + kpi('Attendu', fmtF(g.due)) + kpi('Encaissé', fmtF(g.paid)) + kpi('Reste à percevoir', fmtF(g.rest)) + kpi('Recouvrement', g.due ? g.pct + '%' : '—');
+  document.getElementById('feeCrumb').innerHTML = `<a onclick="feesGo('','')">Tous les niveaux</a>` + (lvl ? ` › <a data-l="${E(lvl)}" onclick="feesGo(this.dataset.l,'')">${E(lvl)}</a>` : '') + (idx !== '' ? ` › <strong>${E(lvl)} ${E(idx)}</strong>` : '');
+  const grpHead = (t) => `<table><thead><tr><th>${t}</th><th>Élèves</th><th>Attendu</th><th>Encaissé</th><th>Reste</th><th>Avancement</th><th>Statut</th></tr></thead><tbody>`;
+  const row = (label, st, l, i) => `<tr class="clk" data-l="${E(l)}" data-i="${E(i)}" onclick="feesGo(this.dataset.l,this.dataset.i)"><td><strong>${E(label)}</strong></td><td>${st.n}</td><td>${fmtF(st.due)}</td><td>${fmtF(st.paid)}</td><td>${fmtF(st.rest)}</td><td style="min-width:120px"><div class="bar"><i style="width:${st.pct}%"></i></div></td><td>${st.due ? pillOf(st.pct) : '<span class="pill mid">Barème ?</span>'}</td></tr>`;
+  let html;
+  if (!lvl) {
+    const lv = Object.keys(schoolDatabase).filter(l => Object.keys(schoolDatabase[l]).length);
+    html = lv.length ? grpHead('Niveau') + lv.map(l => row(l, groupStats(all.filter(s => s.lvl === l)), l, '')).join('') + '</tbody></table>' : '<p class="empty">Aucune classe créée pour le moment.</p>';
+  } else if (idx === '') {
+    const cl = Object.keys(schoolDatabase[lvl]).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    html = grpHead('Classe') + cl.map(i => row(`${lvl} ${i}`, groupStats(all.filter(s => s.lvl === lvl && s.idx === i)), lvl, i)).join('') + '</tbody></table>';
+  } else {
+    html = scope.length ? `<table><thead><tr><th>Matricule</th><th>Élève</th><th>Frais</th><th>Remise</th><th>Payé</th><th>Reste</th><th>Statut</th><th></th></tr></thead><tbody>` + scope.sort((a, b) => a.name.localeCompare(b.name)).map(s => {
+      const f = feeOf(s), p = studentPaid(s.code), pct = f ? Math.min(100, Math.round(p / f * 100)) : 0;
+      return `<tr><td><span class="badge badge-code">${E(s.code)}</span></td><td><strong>${E(s.name)}</strong></td><td>${fmtF(f)}</td><td>${fmtF(feesDatabase.discounts[s.code] || 0)}</td><td>${fmtF(p)}</td><td>${fmtF(Math.max(0, f - p))}</td><td>${f ? pillOf(pct) : '—'}</td>
+        <td style="white-space:nowrap"><button class="btn-delete" style="color:#8a6a22;background:#f7f0de" data-c="${E(s.code)}" onclick="prefillPay(this.dataset.c)">Encaisser</button> <button class="btn-delete" style="color:#2a2b31;background:#eee" data-c="${E(s.code)}" onclick="setDiscount(this.dataset.c)">Remise</button></td></tr>`;
+    }).join('') + '</tbody></table>' : '<p class="empty">Aucun élève inscrit dans cette classe.</p>';
+  }
+  document.getElementById('feeView').innerHTML = html;
+  document.getElementById('codeList').innerHTML = all.map(s => `<option value="${E(s.code)}">${E(s.name)}</option>`).join('');
+  const pays = feesDatabase.payments.slice().sort((a, b) => b.id - a.id).slice(0, 15);
+  document.getElementById('payJournal').innerHTML = pays.length ? `<table><thead><tr><th>Date</th><th>Élève</th><th>Classe</th><th>Montant</th><th>Mode</th><th></th></tr></thead><tbody>` + pays.map(p => {
+    const s = all.find(x => x.code === p.code) || { name: p.code, cls: '—' };
+    return `<tr><td>${E(p.date)}</td><td><strong>${E(s.name)}</strong></td><td>${E(s.cls)}</td><td>${fmtF(p.amount)}</td><td>${E(p.mode)}${p.ref ? '<br><small style="color:var(--muted)">' + E(p.ref) + '</small>' : ''}</td>
+      <td style="white-space:nowrap"><button class="btn-delete" style="color:#8a6a22;background:#f7f0de" onclick="showReceipt(${p.id})">Reçu</button> <button class="btn-delete" onclick="cancelPayment(${p.id})">Annuler</button></td></tr>`;
+  }).join('') + '</tbody></table>' : '<p class="empty">Aucun paiement enregistré.</p>';
+}
+
+// ===== Assistant local : comprend les questions d'administration, gratuit et sans internet =====
+const normQ = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’']/g, ' ')
+  .replace(/\b([3-6])\s*e\b/g, '$1eme').replace(/\b1\s*(?:ere|re)\b/g, '1ere').replace(/\btle\b/g, 'terminale').replace(/\s+/g, ' ').trim();
+const li = a => a.map(x => '• ' + x).join('<br>');
+const E = escapeHtml;
+const gradeNum = r => parseFloat(String(r.grade).replace(',', '.'));
+let lastDraft = null;
+
+function allClassNames() {
+  const s = new Set([...Object.keys(timetablesDatabase), ...Object.keys(receivedGradesDatabase)]);
+  for (const l in schoolDatabase) for (const i in schoolDatabase[l]) s.add(l + ' ' + i);
+  return [...s];
+}
+function findClass(q) {
+  const names = allClassNames().map(n => [n, normQ(n)]).sort((a, b) => b[1].length - a[1].length);
+  for (const [n, k] of names) {
+    if (new RegExp('(^|\\s)' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?=$|[\\s?.,!;:])').test(q)) return n;
+  }
+  return null;
+}
+function findLevel(q) { return Object.keys(schoolDatabase).find(l => new RegExp('(^|\\s)' + normQ(l) + '(?=$|[\\s?.,!;:])').test(q)) || null; }
+function allProfs() {
+  const s = new Set();
+  for (const k in timetablesDatabase) timetablesDatabase[k].forEach(o => s.add(o.prof));
+  document.querySelectorAll('#professorsTableBody tr td:first-child').forEach(td => s.add(td.textContent.split(' - ')[0].trim()));
+  return [...s].filter(Boolean);
+}
+function findProf(q) {
+  for (const p of allProfs()) {
+    const parts = normQ(p).replace(/^(m|mme|mlle|mr|dr|prof)\.?\s+/, '').split(' ').filter(w => w.length > 2);
+    if (parts.length && parts.every(w => (' ' + q + ' ').includes(' ' + w + ' ') || q.includes(w))) return p;
+  }
+  return null;
+}
+function findStudent(q) {
+  const padded = ' ' + q + ' ';
+  for (const l in schoolDatabase) for (const i in schoolDatabase[l]) for (const s of schoolDatabase[l][i]) {
+    const parts = normQ(s.name).split(' ').filter(w => w.length > 2);
+    if (q.includes(normQ(s.code)) || (parts.length && parts.every(w => padded.includes(' ' + w + ' '))) ||
+        parts.some(w => w.length > 3 && padded.includes(' ' + w + ' '))) return { ...s, cls: `${l} ${i}` };
+  }
+  return null;
+}
+function fmtTT(items, mode) {
+  return DAYS.map(d => {
+    const L = items.filter(o => o.day === d).sort((a, b) => (parseSlot(a.time) || [0])[0] - (parseSlot(b.time) || [0])[0]);
+    return L.length ? `<strong>${d}</strong><br>` + li(L.map(o => `${E(o.time)} — ${E(o.subject)} (${E(mode === 'class' ? o.prof : o.cls)})`)) : '';
+  }).filter(Boolean).join('<br><br>');
+}
+function scanConflicts() {
+  const all = [], out = [];
+  for (const k in timetablesDatabase) timetablesDatabase[k].forEach(o => all.push({ ...o, cls: k, s: parseSlot(o.time) }));
+  for (let i = 0; i < all.length; i++) for (let j = i + 1; j < all.length; j++) {
+    const a = all[i], b = all[j];
+    if (a.day !== b.day || !a.s || !b.s || a.s[0] >= b.s[1] || b.s[0] >= a.s[1]) continue;
+    if (a.cls === b.cls) out.push(`${E(a.cls)} : ${E(a.subject)} et ${E(b.subject)} se chevauchent le ${a.day}.`);
+    else if (a.prof.toLowerCase() === b.prof.toLowerCase()) out.push(`${E(a.prof)} est prévu(e) en ${E(a.cls)} et ${E(b.cls)} le ${a.day} (${E(a.time)}).`);
+  }
+  return out;
+}
+function draftBox(title, text, canAnnounce) {
+  lastDraft = { title, text };
+  return `<strong>${E(title)}</strong><br><br>${E(text).replace(/\n/g, '<br>')}<br><br>
+    <button class="btn btn-primary" style="padding:8px 14px;font-size:12.5px" onclick="copyDraft()">Copier</button>` +
+    (canAnnounce ? ` <button class="btn btn-success" style="padding:8px 14px;font-size:12.5px" onclick="useDraft()">Utiliser dans Annonces</button>` : '') +
+    `<span class="note">Remplacez les [crochets] par vos informations.</span>`;
+}
+function copyDraft() { if (lastDraft && navigator.clipboard) navigator.clipboard.writeText(lastDraft.text).then(() => alert('Texte copié !')); }
+function useDraft() {
+  if (!lastDraft) return;
+  document.getElementById('annTitle').value = lastDraft.title;
+  document.getElementById('annMsg').value = lastDraft.text;
+  switchTab('centre', document.querySelector('.tab-btn[onclick*="centre"]'));
+}
+
+function writeDraft(q, orig) {
+  const school = document.getElementById('configSchoolName').value.trim() || "l'établissement";
+  if (/apprecia/.test(q)) {
+    const st = findStudent(q);
+    let g = null;
+    if (st) { const r = (receivedGradesDatabase[st.cls] || []).find(x => x.code === st.code); if (r) g = gradeNum(r); }
+    if (g === null) { const m = orig.match(/(?:moyenne|note)\s*(?:de|est|:)?\s*(\d{1,2}(?:[.,]\d+)?)|(\d{1,2}(?:[.,]\d+)?)\s*\/\s*20/i); if (m) g = parseFloat((m[1] || m[2]).replace(',', '.')); }
+    const who = st ? st.name : '[Nom de l\'élève]';
+    if (g === null) return `Pour rédiger une appréciation, donnez-moi la moyenne. Exemple : <em>« appréciation pour Agoua Ruben moyenne 14,5 »</em>.`;
+    const t = g >= 16 ? "Excellent trimestre. Résultats remarquables et travail très sérieux. Félicitations, continuez ainsi."
+      : g >= 14 ? "Très bon trimestre. Élève sérieux(se) et motivé(e). Encouragements."
+      : g >= 12 ? "Bon trimestre. Des résultats satisfaisants, il faut maintenir l'effort pour progresser encore."
+      : g >= 10 ? "Résultats corrects mais fragiles. Plus de régularité et de travail personnel sont attendus."
+      : g >= 8 ? "Résultats insuffisants. Un effort soutenu et un meilleur suivi du travail à la maison sont nécessaires."
+      : "Résultats très insuffisants. Un accompagnement renforcé et une reprise sérieuse du travail sont indispensables.";
+    return draftBox(`Appréciation — ${who} (${String(g).replace('.', ',')}/20)`, `${who} : ${t}`, false);
+  }
+  if (/parent|lettre|courrier/.test(q)) {
+    const topic = /absen/.test(q) ? ["Absences répétées", "Nous constatons des absences répétées de votre enfant [NOM DE L'ÉLÈVE], classe de [CLASSE]. Nous vous prions de bien vouloir justifier ces absences auprès de l'administration et de nous contacter."]
+      : /retard/.test(q) ? ["Retards répétés", "Votre enfant [NOM DE L'ÉLÈVE], classe de [CLASSE], arrive régulièrement en retard. Nous vous demandons de veiller à sa ponctualité."]
+      : /reunion/.test(q) ? ["Convocation à une réunion", "Nous vous invitons à une réunion d'information le [DATE] à [HEURE], à [LIEU]. Votre présence est importante."]
+      : /bulletin|resultat|note/.test(q) ? ["Résultats scolaires", "Le bulletin du [TRIMESTRE] de votre enfant [NOM DE L'ÉLÈVE] est disponible. Nous vous invitons à le consulter et à nous rencontrer si besoin."]
+      : ["Information aux parents", "[Votre message ici]"];
+    return draftBox(topic[0], `Objet : ${topic[0]}\n\nMadame, Monsieur,\n\n${topic[1]}\n\nVeuillez agréer, Madame, Monsieur, l'expression de nos salutations distinguées.\n\nLa Direction de ${school}`, false);
+  }
+  const a = /reunion/.test(q) ? ["Réunion", "Une réunion est organisée le [DATE] à [HEURE], à [LIEU]. La présence de tous les [parents / enseignants] est vivement souhaitée."]
+    : /rentree/.test(q) ? ["Rentrée scolaire", "La rentrée scolaire aura lieu le [DATE]. Les élèves sont attendus à [HEURE] munis de leur matériel. Bonne rentrée à tous !"]
+    : /vacance|conge/.test(q) ? ["Vacances scolaires", "Les vacances débuteront le [DATE] et la reprise des cours est prévue le [DATE]. Bonnes vacances à tous."]
+    : /examen|composition|devoir/.test(q) ? ["Calendrier des compositions", "Les compositions du [TRIMESTRE] auront lieu du [DATE] au [DATE]. Les élèves doivent être à jour de leur scolarité et présents à l'heure."]
+    : /ferme|ferie/.test(q) ? ["Fermeture exceptionnelle", "L'établissement sera fermé le [DATE] en raison de [MOTIF]. Les cours reprendront le [DATE]."]
+    : ["Annonce importante", "[Votre message ici]"];
+  return draftBox(a[0], `${a[1]}\n\nLa Direction de ${school}`, true);
+}
+
+function localAnswer(text) {
+  const q = normQ(text);
+  const day = DAYS.find(d => q.includes(normQ(d)));
+  const wantsTT = /emploi|planning|horaire|cours|programme|edt/.test(q);
+
+  if (/^(salut|bonjour|bonsoir|coucou|hello)\b|ca va|comment vas/.test(q)) return "Bonjour ! Je suis prêt à vous aider pour ScolACI. Tapez <strong>aide</strong> pour voir ce que je sais faire.";
+  if (/merci/.test(q)) return "Avec plaisir ! N'hésitez pas si vous avez besoin d'autre chose.";
+  if (/^(aide|help|menu)\b|que sais.?tu|que peux.?tu|qui es.?tu|tu peux faire|comment t.?appelles/.test(q)) {
+    return `Je suis l'assistant <strong>ScolACI</strong>. Voici ce que je sais faire :<br>` + li([
+      "Les <strong>classes</strong> et <strong>effectifs</strong> : « combien d'élèves en Terminale 1 ? »",
+      "La <strong>liste des élèves</strong> : « élèves de la 6ème 1 »",
+      "Les <strong>emplois du temps</strong> : « emploi du temps de M. Kouassi lundi », « planning de Terminale 1 »",
+      "Les <strong>professeurs libres</strong> : « qui est libre jeudi ? »",
+      "Les <strong>conflits</strong> d'horaires : « y a-t-il des conflits ? »",
+      "Les <strong>notes</strong> : « meilleure moyenne en Terminale 1 », « classement »",
+      "Un <strong>élève</strong> : « infos sur Agoua Ruben »",
+      "<strong>Rédiger</strong> : « rédige une annonce de réunion », « courrier aux parents absences », « appréciation pour Agoua Ruben »"]);
+  }
+  if (/redige|ecris|ecrire|genere un|modele|annonce|circulaire|lettre|courrier|apprecia/.test(q) && !/emploi/.test(q)) return writeDraft(q, text);
+  if (/conflit|chevauch|probleme.*(emploi|planning)/.test(q)) {
+    const c = scanConflicts();
+    return c.length ? `⚠️ <strong>${c.length} conflit(s) détecté(s) :</strong><br>` + li(c) : "✅ Aucun conflit d'horaire détecté dans les emplois du temps.";
+  }
+  const prof = findProf(q);
+  if (/libre|disponible/.test(q) && day && !prof) {
+    const busy = new Set();
+    for (const k in timetablesDatabase) timetablesDatabase[k].filter(o => o.day === day).forEach(o => busy.add(o.prof.toLowerCase()));
+    const free = allProfs().filter(p => !busy.has(p.toLowerCase()));
+    return free.length ? `Professeurs sans cours le <strong>${day}</strong> :<br>` + li(free.map(E)) : `Tous les professeurs connus ont au moins un cours le ${day}.`;
+  }
+  if (prof) {
+    const items = [];
+    for (const k in timetablesDatabase) timetablesDatabase[k].filter(o => o.prof.toLowerCase() === prof.toLowerCase()).forEach(o => items.push({ ...o, cls: k }));
+    const shown = day ? items.filter(o => o.day === day) : items;
+    if (!items.length) return `Aucun cours n'est programmé pour <strong>${E(prof)}</strong> pour le moment.`;
+    const classes = [...new Set(items.map(o => o.cls))];
+    return `<strong>${E(prof)}</strong> — classes : ${classes.map(E).join(', ')}<br><br>` + (shown.length ? fmtTT(shown, 'prof') : `Pas de cours le ${day}.`);
+  }
+  const cls = findClass(q);
+  if (cls && wantsTT) {
+    const items = (timetablesDatabase[cls] || []).map(o => ({ ...o, cls }));
+    const shown = day ? items.filter(o => o.day === day) : items;
+    return shown.length ? `<strong>Emploi du temps — ${E(cls)}</strong>${day ? ' (' + day + ')' : ''}<br><br>` + fmtTT(shown, 'class') : `Aucun cours programmé pour ${E(cls)}${day ? ' le ' + day : ''}.`;
+  }
+  if (/moyenne|note|classement|meilleur|major|premier|dernier/.test(q)) {
+    const rows = cls ? (receivedGradesDatabase[cls] || []).map(r => ({ ...r, cls })) : Object.entries(receivedGradesDatabase).flatMap(([c, a]) => a.map(r => ({ ...r, cls: c })));
+    if (!rows.length) return "Aucune note n'a encore été transmise" + (cls ? ` pour ${E(cls)}.` : ".");
+    const sorted = rows.slice().sort((a, b) => gradeNum(b) - gradeNum(a));
+    const avg = (sorted.reduce((t, r) => t + gradeNum(r), 0) / sorted.length).toFixed(2);
+    return `<strong>Notes ${cls ? 'de ' + E(cls) : 'de toutes les classes'}</strong> — moyenne : <strong>${avg}/20</strong><br>` +
+      li(sorted.map((r, i) => `${i + 1}. ${E(r.name)}${cls ? '' : ' (' + E(r.cls) + ')'} : ${E(r.grade)}/20`));
+  }
+  if (cls) {
+    const [l, i] = [Object.keys(schoolDatabase).find(x => cls.startsWith(x + ' ')), null];
+    const idx = l ? cls.slice(l.length + 1) : null;
+    const list = l && schoolDatabase[l][idx] ? schoolDatabase[l][idx].slice().sort((a, b) => a.name.localeCompare(b.name)) : [];
+    if (/combien|effectif|nombre/.test(q)) return `<strong>${E(cls)}</strong> compte <strong>${list.length}</strong> élève(s).`;
+    return list.length ? `<strong>Élèves de ${E(cls)}</strong> (${list.length}) :<br>` + li(list.map(s => `${E(s.name)} — ${E(s.code)}`)) : `Aucun élève inscrit en ${E(cls)} pour le moment.`;
+  }
+  const st = findStudent(q);
+  if (st) {
+    const r = (receivedGradesDatabase[st.cls] || []).find(x => x.code === st.code);
+    return `<strong>${E(st.name)}</strong><br>` + li([`Matricule : ${E(st.code)}`, `Classe : ${E(st.cls)}`, r ? `Moyenne : ${E(r.grade)}/20 — ${E(r.comment)}` : "Aucune note transmise pour l'instant"]);
+  }
+  if (/professeur|enseignant|prof\b/.test(q)) {
+    const p = allProfs();
+    return p.length ? `<strong>${p.length}</strong> professeur(s) :<br>` + li(p.map(E)) : "Aucun professeur enregistré.";
+  }
+  if (/effectif|eleve|inscrit/.test(q)) {
+    const lvl = findLevel(q);
+    if (lvl) {
+      const n = Object.values(schoolDatabase[lvl]).reduce((t, a) => t + a.length, 0);
+      return `Le niveau <strong>${E(lvl)}</strong> compte <strong>${n}</strong> élève(s) dans ${Object.keys(schoolDatabase[lvl]).length} classe(s).`;
+    }
+    let n = 0; const det = [];
+    for (const l in schoolDatabase) { const c = Object.values(schoolDatabase[l]).reduce((t, a) => t + a.length, 0); n += c; if (Object.keys(schoolDatabase[l]).length) det.push(`${E(l)} : ${c}`); }
+    return `👨‍🎓 <strong>${n}</strong> élève(s) inscrit(s) au total.<br><br>` + li(det);
+  }
+  if (/classe|niveau/.test(q)) {
+    let n = 0; const det = [];
+    for (const l in schoolDatabase) { const k = Object.keys(schoolDatabase[l]); if (k.length) { n += k.length; det.push(`<strong>${E(l)}</strong> : ${k.map(E).join(', ')}`); } }
+    return `📊 <strong>${n}</strong> classe(s) enregistrée(s).<br><br>` + (li(det) || "Aucune classe active.");
+  }
+  return `Je n'ai pas bien compris « <em>${E(text)}</em> ». Essayez par exemple :<br>` + li(["Combien d'élèves en Terminale 1 ?", "Emploi du temps de M. Kouassi lundi", "Qui est libre jeudi ?", "Rédige une annonce de réunion"]) + `<br>Tapez <strong>aide</strong> pour tout voir.`;
+}
+
+async function sendAiMessage(e) {
+  e.preventDefault();
+  const input = document.getElementById('aiUserInput');
+  const box = document.getElementById('aiChatBox');
+  const text = input.value.trim();
+  if (!text) return;
+  box.insertAdjacentHTML('beforeend', `<div class="ai-msg user">${escapeHtml(text)}</div>`);
+  input.value = '';
+  const bot = document.createElement('div');
+  bot.className = 'ai-msg bot typing';
+  bot.textContent = 'ScolACI réfléchit…';
+  box.appendChild(bot);
+  box.scrollTop = box.scrollHeight;
+  aiHistory.push({ role: 'user', content: text });
+  try {
+    const answer = await callAI('chat', aiHistory.slice(-20));
+    aiHistory.push({ role: 'assistant', content: answer });
+    bot.innerHTML = mdLite(answer);
+  } catch (err) {
+    aiHistory.pop();
+    bot.innerHTML = localAnswer(text) + (AI_ENDPOINT ? '<span class="note">Mode hors ligne : l\'IA Claude n\'est pas connectée (' + escapeHtml(err.message) + ').</span>' : '');
+  }
+  bot.classList.remove('typing');
+  box.scrollTop = box.scrollHeight;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function addClass(e) {
+  e.preventDefault();
+  const level = document.getElementById('classLevel').value;
+  const index = document.getElementById('className').value.trim();
+  const prof = document.getElementById('classProf').value.trim() || "Non assigné";
+
+  if (!schoolDatabase[level]) schoolDatabase[level] = {};
+  if (!schoolDatabase[level][index]) schoolDatabase[level][index] = [];
+
+  const fullClassName = `${level} ${index}`;
+  document.getElementById('classesTable').insertAdjacentHTML('beforeend', `
+    <tr>
+      <td><strong>${escapeHtml(fullClassName)}</strong></td>
+      <td>${level}</td>
+      <td>${escapeHtml(prof)}</td>
+      <td><button class="btn-delete" onclick="this.closest('tr').remove()">Supprimer</button></td>
+    </tr>`);
+  document.getElementById('className').value = '';
+  document.getElementById('classProf').value = '';
+  alert('Classe ' + fullClassName + ' créée avec succès !');
+  updateClassDropdown();
+}
+
+function assignClassesToProf(e) {
+  e.preventDefault();
+  const profName = document.getElementById('profInputName').value.trim();
+  const rawClasses = document.getElementById('profAssignedClasses').value.trim();
+  const classList = rawClasses.split(',').map(c => c.trim()).filter(c => c.length > 0);
+
+  let badgesHTML = '';
+  classList.forEach(cls => { badgesHTML += `<span class="badge badge-class">${escapeHtml(cls)}</span> `; });
+
+  const pn = profName.split(' - ')[0].trim(), ps = profName.split(' - ')[1] || '';
+  professorsDb.push({ id: Date.now(), name: pn, subject: ps.trim(), classes: classList });
+  saveAll();
+  document.getElementById('professorsTableBody').insertAdjacentHTML('beforeend', `
+    <tr>
+      <td><strong>${escapeHtml(profName)}</strong></td>
+      <td>${badgesHTML}</td>
+      <td><button class="btn-delete" data-n="${escapeHtml(pn)}" onclick="removeProfAssignment(this)">Retirer</button></td>
+    </tr>`);
+
+  document.getElementById('profInputName').value = '';
+  document.getElementById('profAssignedClasses').value = '';
+  alert(`Attributions enregistrées pour ${profName} !`);
+}
+
+window.onload = function () { updateAdminGradeClassDropdown(); renderDashboard(); };
+// Si un professeur enregistre des données dans un autre onglet, l'admin se met à jour
+window.addEventListener('storage', e => {
+  if (e.key !== DB_KEY) return;
+  loadAll();
+  try { renderDashboard(); renderAdminGradesTable(); renderAttendance(); renderFeesBody(); renderClassTimetable(); refreshClassList(); } catch (err) {}
+});
+
+function updateAdminGradeClassDropdown() {
+  const level = document.getElementById('adminGradeLevel').value;
+  const classSelect = document.getElementById('adminGradeClass');
+  classSelect.innerHTML = '';
+  if (schoolDatabase[level]) {
+    const indices = Object.keys(schoolDatabase[level]);
+    indices.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    indices.forEach(idx => classSelect.insertAdjacentHTML('beforeend', `<option value="${idx}">${level} ${idx}</option>`));
+  }
+  renderAdminGradesTable();
+}
+
+function renderAdminGradesTable() {
+  const level = document.getElementById('adminGradeLevel').value;
+  const index = document.getElementById('adminGradeClass').value;
+  const fullClassName = `${level} ${index}`;
+  const tbody = document.getElementById('adminGradesTableBody');
+
+  document.getElementById('adminGradeTitle').textContent = `Notes transmises pour la classe : ${fullClassName}`;
+  const records = receivedGradesDatabase[fullClassName] || [];
+
+  if (records.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty">Aucune note transmise par les professeurs pour cette classe pour le moment.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = '';
+  records.forEach(rec => {
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td><span class="badge badge-code">${rec.code}</span></td>
+        <td><strong>${rec.name}</strong></td>
+        <td><strong style="color:var(--green);">${rec.grade} / 20</strong></td>
+        <td><em>${rec.comment}</em></td>
+        <td><span class="badge" style="background:#e1f6ea;color:var(--ok);">${rec.status}</span></td>
+      </tr>`);
+  });
+}
+
+function publishClassBulletins() {
+  const level = document.getElementById('adminGradeLevel').value;
+  const index = document.getElementById('adminGradeClass').value;
+  const fullClassName = `${level} ${index}`;
+  const records = receivedGradesDatabase[fullClassName] || [];
+  if (records.length === 0) {
+    alert("Impossible de diffuser : aucune note reçue pour cette classe.");
+    return;
+  }
+  publishedBulletins[fullClassName] = true; saveAll();
+  alert(`🚀 Succès ! Les bulletins officiels de la classe ${fullClassName} ont été diffusés et sont désormais visibles pour tous les élèves et parents !`);
+}
+
+// ===== Emplois du temps =====
+function parseSlot(t) {
+  const m = String(t).match(/(\d{1,2})\s*[h:]?\s*(\d{2})?\s*(?:-|–|à)\s*(\d{1,2})\s*[h:]?\s*(\d{2})?/i);
+  return m ? [+m[1] * 60 + (+m[2] || 0), +m[3] * 60 + (+m[4] || 0)] : null;
+}
+function classKey(n) {
+  return Object.keys(timetablesDatabase).find(k => k.toLowerCase() === n.toLowerCase()) || n;
+}
+// Détecte les chevauchements : même classe ou même professeur au même moment
+function findConflict(cls, e) {
+  const s = parseSlot(e.time);
+  if (!s) return null;
+  for (const k in timetablesDatabase) for (const o of timetablesDatabase[k]) {
+    if (o.day !== e.day) continue;
+    const t = parseSlot(o.time);
+    if (!t || s[0] >= t[1] || t[0] >= s[1]) continue;
+    if (k.toLowerCase() === cls.toLowerCase()) return `La classe ${k} a déjà ${o.subject} le ${o.day} (${o.time}).`;
+    if (o.prof.toLowerCase() === e.prof.toLowerCase()) return `${o.prof} donne déjà cours à ${k} le ${o.day} (${o.time}).`;
+  }
+  return null;
+}
+
+function saveSchedule(e) {
+  e.preventDefault();
+  const className = classKey(document.getElementById('ttTargetClass').value.trim());
+  const entry = {
+    id: Date.now(),
+    day: document.getElementById('ttDay').value,
+    time: document.getElementById('ttTime').value.trim(),
+    subject: document.getElementById('ttSubject').value.trim(),
+    prof: document.getElementById('ttProf').value.trim()
+  };
+  const conflict = findConflict(className, entry);
+  if (conflict && !confirm(conflict + "\n\nAjouter quand même ce cours ?")) return;
+  if (!timetablesDatabase[className]) timetablesDatabase[className] = [];
+  timetablesDatabase[className].push(entry);
+  alert(`Cours de ${entry.subject} ajouté à l'emploi du temps de ${className} (visible aussi chez le professeur et les élèves).`);
+  ['ttTime', 'ttSubject', 'ttProf'].forEach(id => document.getElementById(id).value = '');
+  renderClassTimetable();
+}
+
+function renderClassTimetable() {
+  const mode = document.getElementById('ttViewMode').value;
+  const inputEl = document.getElementById('viewTtClassInput');
+  const q = inputEl.value.trim();
+  const title = document.getElementById('ttDisplayTitle');
+  const grid = document.getElementById('ttGrid');
+  inputEl.placeholder = mode === 'class' ? 'Tapez la classe (ex: 6ème 1)' : 'Tapez le nom du professeur (ex: M. Kouassi)';
+  if (!q) {
+    title.textContent = mode === 'class' ? 'Entrez une classe pour voir son emploi du temps' : 'Entrez un professeur pour voir son emploi du temps';
+    grid.innerHTML = '<p class="empty">Aucune sélection active</p>';
+    return;
+  }
+  const items = [];
+  if (mode === 'class') {
+    const k = Object.keys(timetablesDatabase).find(k => k.toLowerCase() === q.toLowerCase());
+    title.textContent = `Emploi du temps de la classe : ${k || q}`;
+    (timetablesDatabase[k] || []).forEach(o => items.push({ ...o, cls: k }));
+  } else {
+    title.textContent = `Emploi du temps de : ${q}`;
+    for (const k in timetablesDatabase) timetablesDatabase[k].filter(o => o.prof.toLowerCase().includes(q.toLowerCase())).forEach(o => items.push({ ...o, cls: k }));
+  }
+  if (!items.length) { grid.innerHTML = '<p class="empty">Aucun cours programmé pour le moment.</p>'; return; }
+  grid.innerHTML = '<div class="week">' + DAYS.map(d => {
+    const list = items.filter(o => o.day === d).sort((a, b) => (parseSlot(a.time) || [0])[0] - (parseSlot(b.time) || [0])[0]);
+    return `<div class="day"><h4>${d}</h4>` + (list.length ? list.map(o => `
+      <div class="slot"><span class="badge badge-code">${escapeHtml(o.time)}</span><b>${escapeHtml(o.subject)}</b>
+      <small>${escapeHtml(mode === 'class' ? o.prof : o.cls)}</small><br>
+      <button class="btn-delete" data-c="${escapeHtml(o.cls)}" onclick="removeScheduleItem(this.dataset.c, ${o.id})">Supprimer</button></div>`).join('') : '<span class="none">Libre</span>') + '</div>';
+  }).join('') + '</div>';
+}
+
+function removeScheduleItem(className, id) {
+  if (confirm("Voulez-vous supprimer ce créneau de l'emploi du temps ?")) {
+    timetablesDatabase[className] = timetablesDatabase[className].filter(item => item.id !== id);
+    renderClassTimetable();
+  }
+}
+
+// Génération de l'emploi du temps par l'IA
+let aiProposal = null;
+async function aiGenerateTimetable() {
+  const cls = document.getElementById('aiTtClass').value.trim();
+  const brief = document.getElementById('aiTtBrief').value.trim();
+  const btn = document.getElementById('aiTtBtn');
+  const out = document.getElementById('aiTtPreview');
+  if (!cls || !brief) { alert('Renseignez la classe et les contraintes.'); return; }
+  btn.disabled = true; btn.textContent = 'Génération en cours…';
+  try {
+    const t = await callAI('timetable', [{ role: 'user', content: `Classe : ${cls}\nContraintes : ${brief}` }]);
+    const j = JSON.parse(t.slice(t.indexOf('{'), t.lastIndexOf('}') + 1));
+    aiProposal = { cls: classKey(cls), slots: (j.slots || []).filter(s => s.day && s.time && s.subject && s.prof) };
+    if (!aiProposal.slots.length) throw new Error('aucun créneau proposé');
+    out.innerHTML = `<div class="inset"><h3>Proposition pour ${escapeHtml(aiProposal.cls)}</h3><div class="table-wrap"><table>
+      <thead><tr><th>Jour</th><th>Horaires</th><th>Matière</th><th>Professeur</th></tr></thead><tbody>` +
+      aiProposal.slots.map(s => `<tr><td>${escapeHtml(s.day)}</td><td><span class="badge badge-code">${escapeHtml(s.time)}</span></td><td>${escapeHtml(s.subject)}</td><td>${escapeHtml(s.prof)}</td></tr>`).join('') +
+      `</tbody></table></div><div class="actions-end"><button class="btn btn-success" onclick="applyAiProposal()">Valider et enregistrer</button></div></div>`;
+  } catch (err) {
+    out.innerHTML = `<p class="card-sub" style="margin:0">${AI_ENDPOINT ? 'Impossible de générer le planning : ' + escapeHtml(err.message) + '. Vérifiez que le serveur IA est démarré.' : "La génération par IA est désactivée (mode gratuit). Utilisez le formulaire d'ajout ci-dessus."}</p>`;
+  }
+  btn.disabled = false; btn.textContent = 'Générer la proposition';
+}
+
+function applyAiProposal() {
+  if (!aiProposal) return;
+  const { cls, slots } = aiProposal;
+  if (!timetablesDatabase[cls]) timetablesDatabase[cls] = [];
+  let added = 0; const skipped = [];
+  slots.forEach((s, i) => {
+    const entry = { id: Date.now() + i, day: s.day, time: s.time, subject: s.subject, prof: s.prof };
+    const c = findConflict(cls, entry);
+    if (c) skipped.push(c); else { timetablesDatabase[cls].push(entry); added++; }
+  });
+  saveAll();
+  aiProposal = null;
+  document.getElementById('aiTtPreview').innerHTML = '';
+  document.getElementById('viewTtClassInput').value = cls;
+  document.getElementById('ttViewMode').value = 'class';
+  renderClassTimetable();
+  alert(`${added} cours enregistré(s) pour ${cls}.` + (skipped.length ? `\n\nIgnorés (conflits) :\n- ` + skipped.join('\n- ') : ''));
+}
+
+function updateClassDropdown() {
+  const level = document.getElementById('selectLevelFilter').value;
+  const classSelect = document.getElementById('selectClassFilter');
+  classSelect.innerHTML = '<option value="">-- Sélectionnez une classe --</option>';
+  if (schoolDatabase[level]) {
+    const indices = Object.keys(schoolDatabase[level]);
+    indices.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    indices.forEach(idx => classSelect.insertAdjacentHTML('beforeend', `<option value="${idx}">${level} ${idx}</option>`));
+  }
+  renderClassStudentList();
+}
+
+function renderClassStudentList() {
+  const level = document.getElementById('selectLevelFilter').value;
+  const index = document.getElementById('selectClassFilter').value;
+  const titleEl = document.getElementById('currentClassTitle');
+  const tbody = document.getElementById('filteredStudentsTableBody');
+
+  if (!index) {
+    titleEl.textContent = "Veuillez sélectionner une classe";
+    tbody.innerHTML = `<tr><td colspan="3" class="empty">Aucune sélection active</td></tr>`;
+    return;
+  }
+
+  titleEl.textContent = `Élèves de la classe : ${level} ${index}`;
+  const students = schoolDatabase[level][index] || [];
+  students.sort((a, b) => a.name.localeCompare(b.name));
+
+  if (students.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" class="empty">Aucun élève inscrit.</td></tr>`;
+  } else {
+    tbody.innerHTML = '';
+    students.forEach(st => {
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td><span class="badge badge-code">${escapeHtml(st.code)}</span></td>
+          <td><strong>${escapeHtml(st.name)}</strong></td>
+          <td><button class="btn-delete" onclick="removeStudentFromClass('${level}', '${index}', '${st.code}')">Retirer</button></td>
+        </tr>`);
+    });
+  }
+}
+
+function addStudent(e) {
+  e.preventDefault();
+  const name = document.getElementById('stName').value.trim();
+  const level = document.getElementById('stLevel').value;
+  const index = document.getElementById('stClassIndex').value.trim();
+  const code = document.getElementById('stCode').value.trim();
+  const fullClassName = `${level} ${index}`;
+
+  if (!schoolDatabase[level]) schoolDatabase[level] = {};
+  if (!schoolDatabase[level][index]) schoolDatabase[level][index] = [];
+  schoolDatabase[level][index].push({ name, code });
+
+  document.getElementById('studentsTable').insertAdjacentHTML('beforeend', `
+    <tr data-code="${code}">
+      <td><span class="badge badge-code">${escapeHtml(code)}</span></td>
+      <td>${escapeHtml(name)}</td>
+      <td>${escapeHtml(fullClassName)}</td>
+      <td><button class="btn-delete" onclick="removeStudentGlobal('${level}', '${index}', '${code}', this)">Retirer</button></td>
+    </tr>`);
+  document.getElementById('stName').value = '';
+  document.getElementById('stClassIndex').value = '';
+  document.getElementById('stCode').value = '';
+  alert(`Élève ${name} inscrit en ${fullClassName} !`);
+  renderClassStudentList();
+}
+
+function removeStudentFromClass(level, index, code) {
+  if (confirm("Retirer cet élève de la classe ?")) {
+    schoolDatabase[level][index] = schoolDatabase[level][index].filter(st => st.code !== code);
+    const globalRow = document.querySelector(`#studentsTable tr[data-code="${code}"]`);
+    if (globalRow) globalRow.remove();
+    renderClassStudentList();
+  }
+}
+
+function removeStudentGlobal(level, index, code, btn) {
+  if (confirm("Retirer cet élève de l'établissement ?")) {
+    schoolDatabase[level][index] = schoolDatabase[level][index].filter(st => st.code !== code);
+    btn.closest('tr').remove();
+    renderClassStudentList();
+  }
+}
+
+function removeProfAssignment(btn) {
+  const n = btn.dataset.n;
+  for (let i = professorsDb.length - 1; i >= 0; i--) if (professorsDb[i].name === n) professorsDb.splice(i, 1);
+  btn.closest('tr').remove(); saveAll();
+}
+
+function publishAnnouncement() {
+  const title = document.getElementById('annTitle').value.trim(), message = document.getElementById('annMsg').value.trim();
+  if (!title || !message) { alert('Renseignez le titre et le message.'); return; }
+  announcementsDb.push({ id: Date.now(), title, message, date: new Date().toLocaleDateString('fr-FR') });
+  saveAll();
+  document.getElementById('annTitle').value = ''; document.getElementById('annMsg').value = '';
+  alert('Annonce diffusée : elle est visible dans les espaces élèves.');
+}
+
+// Sauvegarde automatique après chaque action qui modifie les données
+['addClass','addStudent','removeStudentFromClass','removeStudentGlobal','saveSchedule','removeScheduleItem','addPayment','cancelPayment','setDiscount','setLevelFee'].forEach(n => {
+  const f = window[n];
+  window[n] = function (...a) { const r = f.apply(this, a); saveAll(); return r; };
+});
+</script>
+</body>
+</html>

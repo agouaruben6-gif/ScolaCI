@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Espace Élève — ScolACI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f2ee;--surface:#fff;--ink:#14151a;--muted:#74766f;--line:#e7e3da;--gold:#c9a24d;--gold-deep:#8a6a22;--gold-soft:#f7f0de;--ok:#1f9d63;--ok-soft:#e1f6ea;--warn:#b36a0a;--warn-soft:#fdf0e2;--danger:#d93a2f;--danger-soft:#fdeceb;--r:18px;--r-sm:12px;--shadow:0 1px 2px rgba(20,21,26,.04),0 12px 32px rgba(20,21,26,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:radial-gradient(1000px 420px at 85% -10%,#efe7d3,transparent 60%),var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;padding:max(20px,env(safe-area-inset-top)) 20px 40px}
+.shell{max-width:1040px;margin:0 auto}
+button{font-family:inherit}
+
+/* ===== En-tête ===== */
+.hero{background:linear-gradient(135deg,#1a1b22,#0b0c10);color:#fff;border-radius:24px;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid rgba(201,162,77,.3);box-shadow:0 20px 44px rgba(14,16,21,.22);margin-bottom:20px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-80px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(201,162,77,.28),transparent 70%)}
+.hero small{color:#e3c67a;letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:600}
+.hero h1{font-family:"Cormorant Garamond",serif;font-size:36px;line-height:1.1;margin:6px 0 12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);font-size:12.5px;font-weight:600}
+.chip b{color:#f3dc9b}
+.logout-btn{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,.08);color:#ffb4ae;border:1px solid rgba(255,255,255,.16);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.logout-btn:hover{background:rgba(255,255,255,.14)}
+.logout-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ===== Chiffres clés ===== */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,#b8934a,#f0dc9c,transparent)}
+.kpi small{display:block;line-height:1.3;color:var(--muted);font-weight:600;font-size:12px}
+.kpi b{display:block;font-family:"Cormorant Garamond",serif;font-size:34px;line-height:1.15;margin-top:2px}
+.kpi span{display:block;line-height:1.3;font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ===== Onglets ===== */
+.tabs{display:flex;gap:10px;margin-bottom:22px}
+.tab-btn{display:flex;align-items:center;gap:9px;padding:11px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-weight:600;font-size:13.5px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.tab-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab-btn:hover{color:var(--ink)}
+.tab-btn.active{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;border-color:#0e1015;box-shadow:0 8px 20px rgba(14,16,21,.25)}
+
+.panel{display:none}.panel.active{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.panel.active{animation:none}}
+
+/* ===== Cartes, tableaux ===== */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:28px;margin-bottom:20px;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.card-title{font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:700;display:flex;align-items:center;gap:10px}
+.card-title::before{content:"";width:4px;height:20px;border-radius:4px;background:var(--gold)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 14px;font-size:12px;color:var(--muted);font-weight:600;border-bottom:1.5px solid var(--line);white-space:nowrap}
+td{padding:14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700}
+.b-ok{background:var(--ok-soft);color:var(--ok)}.b-warn{background:var(--warn-soft);color:var(--warn)}.b-no{background:var(--danger-soft);color:var(--danger)}.b-gold{background:var(--gold-soft);color:var(--gold-deep)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:var(--r-sm);font-size:13.5px;font-weight:600;border:0;cursor:pointer;background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;box-shadow:0 8px 20px rgba(14,16,21,.25)}
+.empty{text-align:center;color:var(--muted);padding:34px 14px}
+.lock{text-align:center;padding:44px 20px}.lock b{font-family:"Cormorant Garamond",serif;font-size:24px;display:block;margin-bottom:6px}.lock span{color:var(--muted);font-size:13.5px}
+
+/* ===== Emploi du temps ===== */
+.week{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.day{background:#fbfcfb;border:1px solid var(--line);border-radius:var(--r-sm);padding:14px}
+.day.today{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,77,.18);background:#fffdf7}
+.day h4{font-size:13px;font-weight:800;margin-bottom:10px;color:var(--gold-deep);display:flex;justify-content:space-between}
+.slot{border-left:3px solid var(--gold);background:#fff;border-radius:8px;padding:9px 11px;margin-bottom:8px;font-size:12.5px;box-shadow:0 1px 3px rgba(20,21,26,.05)}
+.slot b{display:block;font-size:14px}.slot small{color:var(--muted)}
+.none{color:#b3beb8;font-size:12.5px}
+
+/* ===== Annonces ===== */
+.ann{padding:20px;background:#fbfaf6;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r-sm);margin-bottom:14px}
+.ann strong{display:block;font-size:16px;margin-bottom:2px}.ann small{color:var(--muted);display:block;margin-bottom:8px}.ann p{white-space:pre-line}
+
+/* ===== Tuteur IA ===== */
+.fab{position:fixed;right:22px;bottom:calc(22px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#14151a;font-size:26px;cursor:pointer;box-shadow:0 12px 28px rgba(184,147,74,.5);z-index:40}
+.modal{display:none;position:fixed;right:22px;bottom:calc(92px + env(safe-area-inset-bottom));width:min(410px,calc(100vw - 24px));height:min(560px,72vh);background:#fff;border-radius:22px;box-shadow:0 24px 54px rgba(14,16,21,.28);border:1px solid var(--line);z-index:41;flex-direction:column;overflow:hidden}
+.m-head{background:linear-gradient(135deg,#1a1b22,#0b0c10);color:#fff;padding:16px 18px;display:flex;justify-content:space-between;align-items:center}
+.m-head b{display:block;font-family:"Cormorant Garamond",serif;font-size:20px;color:#f3dc9b}.m-head small{opacity:.7;font-size:11.5px}
+.m-head button{background:none;border:0;color:#fff;font-size:20px;cursor:pointer}
+#aiMsgs{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;background:#f8f6f1}
+.msg{max-width:86%;padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.55}
+.msg.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;align-self:flex-end;border-bottom-right-radius:4px}
+.sugg{padding:10px 12px;display:flex;gap:8px;overflow-x:auto;border-top:1px solid var(--line);background:#fff}
+.sugg button{background:var(--gold-soft);border:1px solid #ecdcae;color:var(--gold-deep);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer}
+.m-in{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#fff}
+.m-in input{flex:1;padding:12px 15px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;font-family:inherit;outline:none}
+.m-in input:focus{border-color:#b8934a;box-shadow:0 0 0 4px rgba(201,162,77,.18)}
+.m-in button{background:linear-gradient(135deg,#23252d,#0e1015);color:#f3dc9b;border:0;padding:0 18px;border-radius:12px;font-weight:700;cursor:pointer}
+.print-only{display:none}
+
+/* ===== Mobile : barre d'onglets en bas, comme une vraie appli ===== */
+@media(max-width:700px){
+  .stack thead{display:none}
+  .stack tr{display:block;border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:10px;background:#fbfaf6}
+  .stack td{display:flex;justify-content:space-between;align-items:center;gap:14px;border:0;padding:6px 0;text-align:right}
+  .stack td::before{content:attr(data-l);color:var(--muted);font-size:12px;font-weight:600;text-align:left;flex:none}
+  body{padding:max(14px,env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom))}
+  .hero{padding:22px 20px;border-radius:20px;flex-direction:column;align-items:flex-start}
+  .hero h1{font-size:29px}.logout-btn{align-self:flex-start}
+  .kpis{grid-template-columns:1fr 1fr 1fr;gap:8px}.kpi{padding:14px 12px}.kpi b{font-size:22px}.kpi small{font-size:11px}
+  .card{padding:20px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;margin:0;gap:0;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);z-index:30}
+  .tab-btn{flex:1;flex-direction:column;gap:3px;padding:8px 2px;border:0;background:none;box-shadow:none;border-radius:12px;font-size:10.5px}
+  .tab-btn.active{background:var(--gold-soft);color:var(--gold-deep);box-shadow:none;border:0}
+  .fab{bottom:calc(86px + env(safe-area-inset-bottom));width:54px;height:54px;font-size:23px}
+  .modal{right:12px;bottom:calc(150px + env(safe-area-inset-bottom));height:min(520px,62vh)}
+}
+@media print{
+  body{background:#fff;padding:0}
+  .hero,.kpis,.tabs,.fab,.modal,.btn,.logout-btn{display:none!important}
+  .panel{display:none!important}#panel-grades{display:block!important}
+  .card{border:0;box-shadow:none;padding:0}.print-only{display:block!important;margin-bottom:18px}
+}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0c10">
+<script>/* Accès réservé + mode aperçu. Sans connexion, la page affiche un écran d'accueil avec un lien vers la connexion et un aperçu en données d'exemple (stockage en mémoire : rien de réel n'est lu ni écrit). Ce contrôle est côté navigateur : il doit être doublé par une vérification serveur. */(function(){
+var ROLE='STUDENT',ME=["CI-2026-897", "Agoua Ruben"],SAMPLE={"schoolDatabase":{"6ème":{"1":[]},"Terminale":{"1":[{"name":"Agoua Ruben","code":"CI-2026-897"},{"name":"Koffi Emmanuel","code":"CI-2026-898"},{"name":"Kassi Estelle","code":"CI-2026-905"},{"name":"Traoré Mohamed","code":"CI-2026-906"}],"2":[]}},"timetablesDatabase":{"Terminale 1":[{"id":1,"day":"Lundi","time":"08:00 - 10:00","subject":"Mathématiques","prof":"M. Kouassi"},{"id":2,"day":"Mardi","time":"10:15 - 12:15","subject":"Physique-Chimie","prof":"M. Koffi"},{"id":3,"day":"Mercredi","time":"08:00 - 10:00","subject":"Mathématiques","prof":"M. Kouassi"},{"id":4,"day":"Jeudi","time":"15:00 - 17:00","subject":"Français","prof":"Mme Traoré"},{"id":5,"day":"Vendredi","time":"08:00 - 10:00","subject":"Anglais","prof":"M. Diallo"}]},"receivedGradesDatabase":{"Terminale 1":[{"code":"CI-2026-897","name":"Agoua Ruben","grade":"15.2","comment":"Moyenne de 2 matières","status":"Transmis par M. Kouassi, M. Koffi","subjects":[{"subject":"Mathématiques","prof":"M. Kouassi","grade":"15.6","comment":"Excellent trimestre, régulier."},{"subject":"Physique-Chimie","prof":"M. Koffi","grade":"14.8","comment":"Bon travail."}]},{"code":"CI-2026-898","name":"Koffi Emmanuel","grade":"13.2","comment":"Bon travail, des progrès.","status":"Transmis par M. Kouassi"},{"code":"CI-2026-905","name":"Kassi Estelle","grade":"16.8","comment":"Très rigoureuse.","status":"Transmis par M. Kouassi"}]},"publishedBulletins":{"Terminale 1":true},"attendanceDatabase":{"Terminale 1":{"2026-09-11#08:00 - 10:00":{"CI-2026-897":{"s":"A","note":"Non justifié","subject":"Mathématiques","time":"08:00 - 10:00"},"CI-2026-898":{"s":"P"}},"2026-09-04#10:15 - 12:15":{"CI-2026-897":{"s":"R","note":"10 min","subject":"Physique-Chimie","time":"10:15 - 12:15"},"CI-2026-898":{"s":"A","subject":"Physique-Chimie","time":"10:15 - 12:15"}}}},"feesDatabase":{"annual":0,"byLevel":{"Terminale":200000,"6ème":120000},"discounts":{},"payments":[{"id":1,"code":"CI-2026-897","amount":200000,"mode":"Wave","ref":"Solde","date":"2026-10-02"},{"id":2,"code":"CI-2026-898","amount":80000,"mode":"Orange Money","ref":"Tranche 1","date":"2026-10-05"}]},"announcementsDb":[{"id":1,"title":"Réunion d'orientation des Terminales","message":"Toutes les classes de Terminale sont convoquées à la grande salle ce samedi à 09h00.","date":"16/10/2026"}],"professorsDb":[{"id":1,"name":"M. Kouassi","subject":"Mathématiques","classes":["Terminale 1"]}]},L=location.pathname.indexOf('/pages/')>-1?'../../login.html':'login.html',BASE=location.href.split(/[?#]/)[0];
+function fixLinks(){document.querySelectorAll('a[href$="login.html"]').forEach(function(x){x.setAttribute('href',L)})}
+function ribbon(){var d=document.createElement('div');d.textContent="Aperçu · données d'exemple · rien n'est enregistré";d.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;background:#c9a24d;color:#1b1608;font:700 12px sans-serif;padding:6px 14px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap';document.body.appendChild(d)}
+function gate(){var d=document.createElement('div');d.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:100000;background:#0b0c10;color:#f1ede3;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow:auto';d.innerHTML='<div style="max-width:380px"><h1 style="font-size:28px;color:#f3dc9b;margin-bottom:10px">Accès réservé</h1><p style="color:#b9bcc8;margin-bottom:22px;line-height:1.5">Connectez-vous pour ouvrir cet espace. Ouvrez la page <b>login.html</b>, située dans le même dossier.</p><a href="'+L+'" style="display:block;padding:14px;border-radius:12px;background:linear-gradient(135deg,#e3c67a,#b8934a);color:#1b1608;font-weight:800;text-decoration:none;margin-bottom:10px">Se connecter</a><a href="'+BASE+'?apercu" style="display:block;padding:12px;border-radius:12px;border:1px solid #3a3f4d;color:#f3dc9b;text-decoration:none;font-weight:600">Voir un aperçu avec des données d\'exemple</a></div>';document.body.appendChild(d)}
+function mem(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}
+if(/[?&]apercu(=|&|$)/.test(location.search)){
+  var ls=mem(),ss=mem();
+  try{Object.defineProperty(window,'localStorage',{value:ls,configurable:true});Object.defineProperty(window,'sessionStorage',{value:ss,configurable:true})}catch(e){}
+  ls.setItem('scolaci_db_v1',JSON.stringify(SAMPLE));ss.setItem('scolaci_session',JSON.stringify({role:ROLE,id:ME[0],name:ME[1],exp:Date.now()+36e5}));
+  document.addEventListener('DOMContentLoaded',function(){fixLinks();ribbon()});return;
+}
+document.addEventListener('DOMContentLoaded',fixLinks);
+var ok=false;try{var s=JSON.parse(sessionStorage.getItem('scolaci_session')||'null');ok=!!(s&&s.role===ROLE&&s.exp>Date.now())}catch(e){}
+if(!ok){try{var r=JSON.parse(localStorage.getItem('scolaci_remember')||'null');if(r&&r.role===ROLE&&r.exp>Date.now()){location.replace(L);return}}catch(e){}document.addEventListener('DOMContentLoaded',gate)}
+})();</script>
+</head>
+<body>
+<div class="shell">
+
+  <header class="hero">
+    <div style="position:relative;z-index:1">
+      <small>Espace Élève</small>
+      <h1 id="hName">Élève</h1>
+      <div class="chips"><span class="chip">Matricule <b id="hCode">—</b></span><span class="chip">Classe <b id="hClass">—</b></span></div>
+    </div>
+    <a href="../../login.html" onclick="scolaciLogout()" class="logout-btn">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Déconnexion</a>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi"><small>Moyenne générale</small><b id="statMoyenne">—</b><span id="statMoyenneSub">&nbsp;</span></div>
+    <div class="kpi"><small>Rang de la classe</small><b id="statRang">—</b><span id="statRangSub">&nbsp;</span></div>
+    <div class="kpi"><small>Absences</small><b id="statAbsences">0</b><span id="statAbsSub">&nbsp;</span></div>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="switchTab('grades', this)"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Bulletin</button>
+    <button class="tab-btn" onclick="switchTab('attendance', this)"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>Absences</button>
+    <button class="tab-btn" onclick="switchTab('schedule', this)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Emploi du temps</button>
+    <button class="tab-btn" onclick="switchTab('announcements', this)"><svg viewBox="0 0 24 24"><path d="M3 11v3a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM15 9a4 4 0 010 6M18 6a8 8 0 010 12"/></svg>Annonces</button>
+  </nav>
+
+  <main>
+    <section id="panel-grades" class="panel active">
+      <div class="card">
+        <div class="print-only"><h2 style="font-family:'Cormorant Garamond',serif;font-size:28px">ScolACI — Bulletin trimestriel</h2><p id="printWho"></p></div>
+        <div class="card-head">
+          <div class="card-title">Bulletin de notes trimestriel</div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span class="badge b-warn" id="bulletinStatusBadge">En attente</span>
+            <button class="btn" onclick="window.print()">Imprimer / PDF</button>
+          </div>
+        </div>
+        <div id="bulletinContent"></div>
+      </div>
+    </section>
+
+    <section id="panel-attendance" class="panel">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Historique des absences et retards</div></div>
+        <div class="table-wrap" id="attContent"></div>
+      </div>
+    </section>
+
+    <section id="panel-schedule" class="panel">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Mon emploi du temps</div><span class="badge b-gold" id="schedClass"></span></div>
+        <div id="schedContent"></div>
+      </div>
+    </section>
+
+    <section id="panel-announcements" class="panel">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Communiqués de l'administration</div></div>
+        <div id="announcementsList"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Tuteur IA -->
+<button class="fab" onclick="toggleAIChat()" aria-label="Ouvrir le tuteur IA">✨</button>
+<div class="modal" id="aiModal">
+  <div class="m-head"><div><b>Tuteur ScolACI</b><small>Cours, exercices et organisation</small></div><button onclick="toggleAIChat()" aria-label="Fermer">✕</button></div>
+  <div id="aiMsgs"><div class="msg bot" id="aiHello"></div></div>
+  <div class="sugg">
+    <button onclick="useSuggestion('Programme du Bac en Côte d Ivoire')">Programme du Bac</button>
+    <button onclick="useSuggestion('Explique moi les dérivées simplement')">Dérivées</button>
+    <button onclick="useSuggestion('Fais moi un planning de révision')">Planning de révision</button>
+  </div>
+  <div class="m-in"><input type="text" id="aiInput" placeholder="Pose ta question…" onkeypress="if(event.key==='Enter')sendAIMessage()"><button onclick="sendAIMessage()">Envoyer</button></div>
+</div>
+
+<script>
+// Identité : la page de connexion doit enregistrer  localStorage.setItem('scolaci_student_matricule', 'CI-2026-897')
+const DEMO_CODE = 'CI-2026-897';
+const DB_KEY = 'scolaci_db_v1';
+const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+const E = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const db = () => { try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; } catch (e) { return {}; } };
+const num = r => parseFloat(String(r.grade).replace(',', '.'));
+const startMin = t => { const m = String(t).match(/(\d{1,2})\s*[h:]?\s*(\d{2})?/); return m ? +m[1] * 60 + (+m[2] || 0) : 0; };
+
+// Déconnexion : efface la session mais garde les données de l'école
+function scolaciLogout() {
+  sessionStorage.removeItem('scolaci_session'); Object.keys(localStorage).filter(k => !k.startsWith('scolaci_db_')).forEach(k => localStorage.removeItem(k)); }
+
+function findMe(d) {
+  const code = (() => { try { return JSON.parse(sessionStorage.getItem('scolaci_session')).id; } catch (e) { return null; } })() || localStorage.getItem('scolaci_student_matricule') || DEMO_CODE, sd = d.schoolDatabase || {};
+  for (const l in sd) for (const i in sd[l]) { const s = sd[l][i].find(x => x.code === code); if (s) return { ...s, cls: `${l} ${i}`, size: sd[l][i].length }; }
+  return { name: 'Élève', code, cls: '—', size: 0, unknown: true };
+}
+
+function render() {
+  const d = db(), me = findMe(d), cls = me.cls;
+  document.getElementById('hName').textContent = me.name;
+  document.getElementById('hCode').textContent = me.code;
+  document.getElementById('hClass').textContent = cls;
+  document.getElementById('printWho').textContent = `${me.name} — ${me.code} — ${cls}`;
+  const first = me.name.split(' ').slice(1).join(' ') || me.name;
+  document.getElementById('aiHello').textContent = `Salut ${first} ! Je suis ton tuteur ScolACI. Je peux t'expliquer une leçon, t'aider sur un exercice ou t'organiser pour tes révisions. Pose-moi ta question !`;
+
+  // ----- Bulletin -----
+  const published = !!(d.publishedBulletins || {})[cls], recs = (d.receivedGradesDatabase || {})[cls] || [], mine = recs.find(r => r.code === me.code);
+  const badge = document.getElementById('bulletinStatusBadge'), box = document.getElementById('bulletinContent');
+  const mention = g => g >= 16 ? ['Excellent', 'b-ok'] : g >= 14 ? ['Très bien', 'b-ok'] : g >= 12 ? ['Bien', 'b-ok'] : g >= 10 ? ['Passable', 'b-warn'] : ['Insuffisant', 'b-no'];
+  let avg = '—', rank = '—', rankSub = '&nbsp;', avgSub = '&nbsp;';
+  if (me.unknown) {
+    badge.className = 'badge b-warn'; badge.textContent = 'Compte non reconnu';
+    box.innerHTML = `<div class="lock"><b>Compte non trouvé</b><span>Votre matricule n'est pas encore inscrit par l'administration.</span></div>`;
+  } else if (!published) {
+    badge.className = 'badge b-warn'; badge.textContent = 'En attente de diffusion';
+    box.innerHTML = `<div class="lock"><b>🔒 Bulletin non encore disponible</b><span>L'administration révise actuellement les moyennes de la classe ${E(cls)}. Le bulletin apparaîtra dès sa diffusion officielle.</span></div>`;
+  } else if (!mine) {
+    badge.className = 'badge b-ok'; badge.textContent = "Diffusé par l'administration";
+    box.innerHTML = `<div class="lock"><b>Aucune note transmise</b><span>Aucune moyenne n'a été transmise pour vous ce trimestre.</span></div>`;
+  } else {
+    badge.className = 'badge b-ok'; badge.textContent = "Diffusé par l'administration";
+    const rows = Array.isArray(mine.subjects) && mine.subjects.length ? mine.subjects
+      : [{ subject: 'Moyenne trimestrielle', prof: String(mine.status || '').replace(/^Transmis par\s*/i, '') || '—', grade: mine.grade, comment: mine.comment }];
+    box.innerHTML = `<div class="table-wrap"><table class="stack"><thead><tr><th>Matière</th><th>Professeur</th><th>Note (/20)</th><th>Appréciation</th></tr></thead><tbody>` +
+      rows.map(r => { const m = mention(num(r)); return `<tr><td data-l="Matière"><strong>${E(r.subject)}</strong></td><td data-l="Professeur">${E(r.prof || '—')}</td><td data-l="Note"><span><strong style="font-family:'Cormorant Garamond',serif;font-size:22px">${E(r.grade)}</strong> / 20</span></td><td data-l="Appréciation"><span><span class="badge ${m[1]}">${m[0]}</span><br><small style="color:var(--muted)">${E(r.comment || '')}</small></span></td></tr>`; }).join('') + `</tbody></table></div>`;
+    const g = num(mine), sorted = recs.map(num).sort((a, b) => b - a), pos = sorted.indexOf(g) + 1;
+    avg = String(mine.grade).replace('.', ',') + '/20'; avgSub = mention(g)[0];
+    rank = pos + (pos === 1 ? 'er' : 'ème'); rankSub = `sur ${me.size || recs.length} élèves`;
+  }
+  document.getElementById('statMoyenne').textContent = avg; document.getElementById('statMoyenneSub').innerHTML = avgSub;
+  document.getElementById('statRang').textContent = rank; document.getElementById('statRangSub').innerHTML = rankSub;
+
+  // ----- Absences -----
+  const att = (d.attendanceDatabase || {})[cls] || {}, ST = { P: 'P', PRESENT: 'P', R: 'R', RETARD: 'R', A: 'A', ABSENT: 'A', E: 'E', EXCUSE: 'E' };
+  const dur = t => { const m = String(t || '').match(/(\d{1,2})\s*[h:]?\s*(\d{2})?\s*(?:-|–|à)\s*(\d{1,2})\s*[h:]?\s*(\d{2})?/); return m ? ((+m[3] * 60 + (+m[4] || 0)) - (+m[1] * 60 + (+m[2] || 0))) / 60 : 0; };
+  const rows = Object.keys(att).sort().reverse().map(key => {
+    const v = att[key][me.code]; if (!v) return null; const o = typeof v === 'object' ? v : {}, [date, tm] = key.split('#');
+    return { date, s: ST[String(typeof v === 'string' ? v : v.s).toUpperCase()] || 'P', note: o.note || '', subject: o.subject || '', time: o.time || tm || '' };
+  }).filter(Boolean);
+  const nA = rows.filter(r => r.s === 'A').length, nR = rows.filter(r => r.s === 'R').length, hA = rows.filter(r => r.s === 'A').reduce((t, r) => t + dur(r.time), 0);
+  document.getElementById('statAbsences').textContent = hA > 0 ? `${+hA.toFixed(1)} h` : nA; document.getElementById('statAbsSub').textContent = `${nA} absence(s) · ${nR} retard(s)`;
+  const B = { P: ['✅ Présent', 'b-ok'], R: ['⏰ Retard', 'b-warn'], A: ['❌ Absent', 'b-no'], E: ['📝 Excusé', 'b-warn'] }, hasX = rows.some(r => r.subject || r.time);
+  document.getElementById('attContent').innerHTML = rows.length ? `<table class="stack"><thead><tr><th>Date</th>${hasX ? '<th>Matière</th><th>Créneau</th>' : ''}<th>Statut</th><th>Remarque</th></tr></thead><tbody>` + rows.map(r =>
+    `<tr><td data-l="Date">${E(new Date(r.date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))}</td>${hasX ? `<td data-l="Matière">${E(r.subject || '—')}</td><td data-l="Créneau">${E(r.time || '—')}</td>` : ''}<td data-l="Statut"><span class="badge ${B[r.s][1]}">${B[r.s][0]}</span></td><td data-l="Remarque">${E(r.note || '—')}</td></tr>`).join('') + `</tbody></table>` : '<p class="empty">Aucune absence ni retard enregistré. Continuez ainsi !</p>';
+
+  // ----- Emploi du temps -----
+  const tt = (d.timetablesDatabase || {})[cls] || [], today = DAYS[(new Date().getDay() + 6) % 7];
+  document.getElementById('schedClass').textContent = cls;
+  document.getElementById('schedContent').innerHTML = tt.length ? '<div class="week">' + DAYS.map(day => {
+    const L = tt.filter(o => o.day === day).sort((a, b) => startMin(a.time) - startMin(b.time));
+    return `<div class="day ${day === today ? 'today' : ''}"><h4>${day}${day === today ? '<span class="badge b-gold">Aujourd\'hui</span>' : ''}</h4>` +
+      (L.length ? L.map(o => `<div class="slot"><span class="badge b-gold">${E(o.time)}</span><b>${E(o.subject)}</b><small>${E(o.prof)}${o.room ? ' · Salle ' + E(o.room) : ''}</small></div>`).join('') : '<span class="none">Pas de cours</span>') + '</div>';
+  }).join('') + '</div>' : '<p class="empty">Aucun emploi du temps publié pour ta classe pour le moment.</p>';
+
+  // ----- Annonces -----
+  const anns = (d.announcementsDb || []).slice().sort((a, b) => b.id - a.id);
+  document.getElementById('announcementsList').innerHTML = anns.length ? anns.map(a =>
+    `<div class="ann"><strong>${E(a.title)}</strong><small>Publié par la Direction${a.date ? ' · ' + E(a.date) : ''}</small><p>${E(a.message)}</p></div>`).join('') : '<p class="empty">Aucune annonce pour le moment.</p>';
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active'); document.getElementById('panel-' + id).classList.add('active'); window.scrollTo({ top: 0 });
+}
+window.addEventListener('storage', render);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+render();
+
+// ===== Tuteur IA =====
+// Laissez vide = tuteur local gratuit. Pour activer Claude : 'https://votre-serveur/api/chat' (voir proxy-claude.js)
+const AI_ENDPOINT = '';
+const tutorHistory = [];
+function toggleAIChat() { const m = document.getElementById('aiModal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+function useSuggestion(t) { document.getElementById('aiInput').value = t; sendAIMessage(); }
+const mdLite = s => E(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/^[-*] /gm, '• ').replace(/\n/g, '<br>');
+
+function localTutor(msg) {
+  const q = msg.toLowerCase();
+  if (/salut|bonjour|coucou|ca va|ça va|wesh/.test(q)) return "Salut ! Je suis prêt à t'aider. On travaille quelle matière aujourd'hui ?";
+  if (/recherche|internet|\bnet\b|bac|programme|actualit/.test(q)) return "🔍 En mode hors ligne, je ne peux pas consulter internet. Pour le programme officiel du Bac, regarde les sources du ministère de l'Éducation nationale ou demande à ton professeur. Je peux en revanche t'expliquer un cours ou t'aider à t'organiser.";
+  if (/deriv|dériv|math|fonction|calcul/.test(q)) return "📐 <strong>Les dérivées</strong><br><br>La dérivée de f(x) mesure la vitesse à laquelle la fonction varie.<br>• Pour <strong>f(x) = xⁿ</strong>, f'(x) = <strong>n·xⁿ⁻¹</strong>.<br>• Exemple : f(x) = x³ + 4x donne f'(x) = 3x² + 4.<br><br>Tu veux essayer un exercice ?";
+  if (/planning|organisation|revision|révision/.test(q)) return "📅 <strong>Planning de révision</strong><br><br>1. <strong>17h00 - 18h00</strong> : Mathématiques (3 exercices)<br>2. <strong>18h15 - 19h00</strong> : Physique-Chimie (relire le cours)<br>3. <strong>20h30 - 21h00</strong> : Français ou Anglais (vocabulaire)<br><br>Astuce : une pause de 10 minutes toutes les 45 minutes.";
+  return `J'ai bien lu ta question : <em>« ${E(msg)} »</em>.<br><br>En mode hors ligne, mes réponses sont limitées aux maths, à l'organisation et aux conseils. Dis-moi la matière et le chapitre, et je t'explique ce que je peux.`;
+}
+
+async function sendAIMessage() {
+  const input = document.getElementById('aiInput'), box = document.getElementById('aiMsgs'), msg = input.value.trim();
+  if (!msg) return;
+  box.insertAdjacentHTML('beforeend', `<div class="msg user">${E(msg)}</div>`); input.value = '';
+  const bot = document.createElement('div'); bot.className = 'msg bot'; bot.style.opacity = '.6'; bot.textContent = 'Le tuteur réfléchit…'; box.appendChild(bot); box.scrollTop = box.scrollHeight;
+  tutorHistory.push({ role: 'user', content: msg });
+  try {
+    if (!AI_ENDPOINT) throw new Error('local');
+    const r = await fetch(AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: 'tutor', messages: tutorHistory.slice(-16) }) });
+    const j = await r.json(); if (!r.ok || j.error) throw new Error(j.error || 'HTTP ' + r.status);
+    tutorHistory.push({ role: 'assistant', content: j.text }); bot.innerHTML = mdLite(j.text);
+  } catch (e) { tutorHistory.pop(); bot.innerHTML = localTutor(msg); }
+  bot.style.opacity = ''; box.scrollTop = box.scrollHeight;
+}
+</script>
+</body>
+</html>
